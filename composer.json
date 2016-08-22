@@ -1,0 +1,30 @@
+{
+    "name": "yireo/yireo_checkouttester2",
+    "license": "OSL-3.0",
+    "type": "magento2-module",
+    "homepage": "https://www.yireo.com/software/magento-extensions/checkouttester2",
+    "description": "Checkout Tester for Magento 2",
+    "keywords":[ "composer-installer", "magento"],
+    "authors": [
+        {
+            "name": "Jisse Reitsma (Yireo)",
+            "email": "jisse@yireo.com"
+        }
+    ],
+    "require": {
+        "magento/framework": "*",
+        "php": ">=5.6.0"
+    },
+    "require-dev":{
+        "phpunit/phpunit":"*",
+        "composer/composer":"*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yireo\\CheckoutTester2\\": "source"
+        },        
+        "files": [
+            "source/registration.php"
+        ]
+    }
+}
