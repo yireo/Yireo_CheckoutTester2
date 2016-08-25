@@ -1,6 +1,6 @@
 # CheckoutTester module for Magento 2
 =========================================
-Homepage: http://www.yireo.com/software/magento-extensions/checkouttester2
+Homepage: http://www.yireo.com/software/magento-extensions/checkout-tester-2
 
 Requirements:
 * Magento 2.0.0 Stable
