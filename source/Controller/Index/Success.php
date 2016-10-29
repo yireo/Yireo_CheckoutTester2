@@ -29,11 +29,6 @@ class Success extends \Magento\Framework\App\Action\Action
     protected $orderRepository;
 
     /**
-     * @var \Magento\Framework\Event\ManagerInterface
-     */
-    protected $eventManager;
-
-    /**
      * @var \Magento\Framework\Registry
      */
     protected $registry;
@@ -54,7 +49,6 @@ class Success extends \Magento\Framework\App\Action\Action
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-     * @param \Magento\Framework\Event\ManagerInterface $eventManager
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Checkout\Model\Session $checkoutSession
      * @param \Yireo\CheckoutTester2\Helper\Data $moduleHelper
@@ -63,16 +57,15 @@ class Success extends \Magento\Framework\App\Action\Action
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \Magento\Framework\Event\ManagerInterface $eventManager,
         \Magento\Framework\Registry $registry,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Yireo\CheckoutTester2\Helper\Data $moduleHelper
     )
     {
         parent::__construct($context);
+
         $this->resultPageFactory = $resultPageFactory;
         $this->orderRepository = $orderRepository;
-        $this->eventManager = $eventManager;
         $this->registry = $registry;
         $this->checkoutSession = $checkoutSession;
         $this->moduleHelper = $moduleHelper;
@@ -200,7 +193,7 @@ class Success extends \Magento\Framework\App\Action\Action
     public function dispatchEvents($order)
     {
         if ($this->moduleHelper->allowDispatchCheckoutOnepageControllerSuccessAction()) {
-            $this->eventManager->dispatch('checkout_onepage_controller_success_action', array('order_ids' => array($order->getId())));
+            $this->_eventManager->dispatch('checkout_onepage_controller_success_action', array('order_ids' => array($order->getId())));
         }
     }
 }
