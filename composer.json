@@ -21,10 +21,10 @@
     },
     "autoload": {
         "psr-4": {
-            "Yireo\\CheckoutTester2\\": "source"
+            "Yireo\\CheckoutTester2\\": ""
         },        
         "files": [
-            "source/registration.php"
+            "registration.php"
         ]
     }
 }

@@ -7,14 +7,20 @@ Requirements:
 * Magento 2.1.0 Stable
 
 ## Installation
-We recommend `composer` to install this package. See our [COMPOSER.md](COMPOSER.md) instructions.
+We recommend `composer` to install this package. Add our own free composer repository to your Magento 2 installation:
 
-If you want a manual copy instead, these are the steps:
-* Upload the files in the `source/` folder to the folder `app/code/Yireo/CheckoutTester2` of your site
+    composer config repositories.yireo-free composer https://satis.yireo.com
+
+Next, install our module using the following command:
+
+    composer require yireo/yireo_checkouttester2
+
+Next, install the new module into Magento itself:
+
 * Run `php -f bin/magento module:enable Yireo_CheckoutTester2`
 * Run `php -f bin/magento setup:upgrade`
 * Flush the Magento cache
-* Configure settings under *Stores > Configuration > Advanced > Yireo CheckoutTester*
+* Configure settings under **Stores > Configuration > Advanced > Yireo CheckoutTester**
 * Done
 
 ## Unit testing
