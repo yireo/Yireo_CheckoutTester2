@@ -1,0 +1,7 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="standard">
+        <route id="checkouttester" frontName="checkouttester">
+            <module name="Yireo_CheckoutTester2" before="Magento_Cms"/>
+        </route>
+    </router>
+</config>
