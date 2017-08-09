@@ -35,11 +35,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function enabled() : bool
     {
-        if ((bool)$this->getConfigValue('checkouttester2/settings/enabled')) {
-            return false;
+        if ((bool)$this->getConfigValue('enabled')) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -81,15 +81,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getIpAddress() : string
     {
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-
-        } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
-        }
+        $ip = $this->_request->getClientIp();
 
         return $ip;
     }
@@ -130,9 +122,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         $value = $this->scopeConfig->getValue(
-            'checkouttester2/settings/' . $key,
+            $key,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
+
+        //print_r($this->scopeConfig);exit;
 
         if (empty($value)) {
             $value = $defaultValue;

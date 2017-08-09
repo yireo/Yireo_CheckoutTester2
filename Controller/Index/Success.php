@@ -81,7 +81,7 @@ class Success extends \Magento\Framework\App\Action\Action
      * @throws \Yireo\CheckoutTester2\Exception\ForbiddenAccess
      * @throws \Yireo\CheckoutTester2\Exception\InvalidOrderId
      */
-    public function execute() : \Magento\Backend\Model\View\Result\Page
+    public function execute()
     {
         // Check access
         if ($this->moduleHelper->hasAccess() == false) {
@@ -119,7 +119,7 @@ class Success extends \Magento\Framework\App\Action\Action
             return $order;
         }
 
-        $orderIdFromConfig = (int)$this->orderHelper->getOrderIdFromConfig();
+        $orderIdFromConfig = (int)$this->moduleHelper->getOrderIdFromConfig();
         $order = $this->orderHelper->getOrderById($orderIdFromConfig);
         if ($order->getEntityId()) {
             return $order;

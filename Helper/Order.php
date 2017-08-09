@@ -19,6 +19,11 @@ use Magento\Eav\Model\Entity\Collection\AbstractCollection;
 class Order
 {
     /**
+     * @var \Yireo\CheckoutTester2\Factory\OrderFactory
+     */
+    protected $orderFactory;
+
+    /**
      * @var \Magento\Sales\Api\OrderRepositoryInterface
      */
     protected $orderRepository;
@@ -35,10 +40,12 @@ class Order
      * @param \Magento\Framework\Api\Search\SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
+        \Yireo\CheckoutTester2\Factory\OrderFactory $orderFactory,
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
         \Magento\Framework\Api\Search\SearchCriteriaBuilder $searchCriteriaBuilder
     )
     {
+        $this->orderFactory = $orderFactory;
         $this->orderRepository = $orderRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
@@ -74,7 +81,7 @@ class Order
      */
     public function getEmptyOrder()
     {
-        return $this->orderRepository->get(0);
+        return $this->orderFactory->create();
     }
 
     /**
