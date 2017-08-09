@@ -1,3 +1,14 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * CheckoutTester plugin for Magento 2
+ *
+ * @package     Yireo_CheckoutTester2
+ * @author      Yireo
+ * @copyright   Copyright 2017 Yireo (https://www.yireo.com/)
+ * @license     Open Source License
+ */
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
     <router id="standard">
         <route id="checkouttester" frontName="checkouttester">

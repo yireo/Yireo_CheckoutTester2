@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * CheckoutTester plugin for Magento 2
+ *
+ * @package     Yireo_CheckoutTester2
+ * @author      Yireo
+ * @copyright   Copyright 2017 Yireo (https://www.yireo.com/)
+ * @license     Open Source License
+ */
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Yireo_CheckoutTester2" setup_version="0.0.4">
+    <module name="Yireo_CheckoutTester2" setup_version="0.0.5">
         <sequence>
             <module name="Magento_Checkout"/>
         </sequence>
