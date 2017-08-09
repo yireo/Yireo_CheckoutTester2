@@ -8,6 +8,7 @@
  * @license     Open Source License (OSL v3)
  */
 
+declare(strict_types = 1);
 namespace Yireo\CheckoutTester2\Controller\Index;
 
 /**
