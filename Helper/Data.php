@@ -81,9 +81,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getIpAddress() : string
     {
-        $ip = $this->_request->getClientIp();
-
-        return $ip;
+        return $this->_request->getClientIp();
     }
 
     /**
