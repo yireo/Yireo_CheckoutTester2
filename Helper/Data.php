@@ -35,7 +35,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function enabled() : bool
     {
-        if ((bool)$this->getConfigValue('advanced/modules_disable_output/Yireo_CheckoutTester2')) {
+        if ((bool)$this->getConfigValue('checkouttester2/settings/enabled')) {
             return false;
         }
 

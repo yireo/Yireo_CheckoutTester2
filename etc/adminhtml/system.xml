@@ -17,6 +17,10 @@
             <resource>Yireo_CheckoutTester2::config</resource>
             <group id="settings" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Settings</label>
+                <field id="enabled" type="select" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="order_id" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Sales Order ID</label>
                     <comment><![CDATA[Numerical ID of sales-order entity]]></comment>
