@@ -80,7 +80,7 @@ class Success extends \Magento\Framework\App\Action\Action
      * @throws \Yireo\CheckoutTester2\Exception\ForbiddenAccess
      * @throws \Yireo\CheckoutTester2\Exception\InvalidOrderId
      */
-    public function execute()
+    public function execute() : \Magento\Backend\Model\View\Result\Page
     {
         // Check access
         if ($this->moduleHelper->hasAccess() == false) {
@@ -110,7 +110,7 @@ class Success extends \Magento\Framework\App\Action\Action
      *
      * @return \Magento\Sales\Api\Data\OrderInterface
      */
-    protected function getOrder()
+    protected function getOrder() : \Magento\Sales\Api\Data\OrderInterface
     {
         $orderIdFromUrl = (int)$this->getRequest()->getParam('order_id');
         $order = $this->orderHelper->getOrderById($orderIdFromUrl);

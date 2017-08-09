@@ -4,7 +4,7 @@
  *
  * @package     Yireo_CheckoutTester2
  * @author      Yireo (https://www.yireo.com/)
- * @copyright   Copyright 2016 Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2017 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -22,7 +22,7 @@ class Link extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element) : string
     {
         $link = $this->getFrontendLink();
         $html = '<a href="' . $link . '" target="_new">'
@@ -42,7 +42,7 @@ class Link extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    public function getFrontendLink()
+    public function getFrontendLink() : string
     {
         $storeId = $this->_getStoreId();
         return $this->_storeManager->getStore($storeId)->getUrl('checkouttester/index/success');
@@ -53,7 +53,7 @@ class Link extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return int
      */
-    protected function _getStoreId()
+    protected function _getStoreId() : int
     {
         return $this->_storeManager->getStore()->getId();
     }

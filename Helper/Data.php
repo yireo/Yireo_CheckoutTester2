@@ -4,14 +4,11 @@
  *
  * @package     Yireo_EmailTester2
  * @author      Yireo (https://www.yireo.com/)
- * @copyright   Copyright 2016 Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2017 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
 namespace Yireo\CheckoutTester2\Helper;
-
-use Magento\Framework\Api\Filter;
-use Magento\Eav\Model\Entity\Collection\AbstractCollection;
 
 /**
  * Class \Yireo\CheckoutTester2\Helper\Data
@@ -35,7 +32,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function enabled()
+    public function enabled() : bool
     {
         if ((bool)$this->getConfigValue('advanced/modules_disable_output/Yireo_CheckoutTester2')) {
             return false;
@@ -49,7 +46,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function hasAccess()
+    public function hasAccess() : bool
     {
         $ip = $this->getConfigValue('ip');
         $ip = trim($ip);
@@ -79,9 +76,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get the current IP address
      *
-     * @return mixed
+     * @return string
      */
-    public function getIpAddress()
+    public function getIpAddress() : string
     {
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -99,9 +96,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Return the order ID
      *
-     * @return string
+     * @return int
      */
-    public function getOrderIdFromConfig()
+    public function getOrderIdFromConfig() : int
     {
         return (int)$this->getConfigValue('order_id');
     }
@@ -111,7 +108,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function allowDispatchCheckoutOnepageControllerSuccessAction()
+    public function allowDispatchCheckoutOnepageControllerSuccessAction() : bool
     {
         return (bool)$this->getConfigValue('checkout_onepage_controller_success_action', false);
     }
@@ -119,13 +116,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Return a configuration value
      *
-     * @param null $key
-     * @param null $defaultValue
-     * @param null $prefix
+     * @param string $key
+     * @param mixed $defaultValue
+     * @param bool $prefix
      *
-     * @return mixed|null
+     * @return mixed
      */
-    public function getConfigValue($key = null, $defaultValue = null, $prefix = true)
+    public function getConfigValue(string $key = '', $defaultValue = null, $prefix = true)
     {
         if ($prefix) {
             $key = 'checkouttester2/settings/' . $key;
