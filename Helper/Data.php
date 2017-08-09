@@ -19,30 +19,14 @@ use Magento\Eav\Model\Entity\Collection\AbstractCollection;
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
-     */
-    protected $orderRepository;
-
-    /**
-     * @var \Magento\Framework\Api\Search\SearchCriteriaBuilder
-     */
-    protected $searchCriteriaBuilder;
-
-    /**
      * Data constructor.
      *
      * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-     * @param \Magento\Framework\Api\Search\SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \Magento\Framework\Api\Search\SearchCriteriaBuilder $searchCriteriaBuilder
+        \Magento\Framework\App\Helper\Context $context
     )
     {
-        $this->orderRepository = $orderRepository;
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         return parent::__construct($context);
     }
 
@@ -120,50 +104,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getOrderIdFromConfig()
     {
         return (int)$this->getConfigValue('order_id');
-    }
-
-    /**
-     * Return the last order ID in this database
-     *
-     * @return int
-     */
-    public function getLastInsertedOrderId()
-    {
-        $orders = $this->getOrderCollection();
-
-        if (empty($orders)) {
-            return 0;
-        }
-
-        $orderItems = $orders->getItems();
-        if (empty($orderItems)) {
-            return 0;
-        }
-
-        $firstOrder = array_shift($orderItems);
-        if (empty($firstOrder)) {
-            return 0;
-        }
-
-        return (int)$firstOrder->getEntityId();
-    }
-
-    /**
-     * @return \Magento\Sales\Api\Data\OrderSearchResultInterface
-     */
-    protected function getOrderCollection()
-    {
-        $searchCriteriaBuilder = $this->searchCriteriaBuilder;
-        $searchCriteriaBuilder->addSortOrder('created_at', AbstractCollection::SORT_ORDER_DESC);
-
-        $searchCriteria = $searchCriteriaBuilder->create();
-        $searchCriteria->setPageSize(1);
-        $searchCriteria->setCurrentPage(0);
-        $searchCriteria->getSortOrders();
-
-        $orders = $this->orderRepository->getList($searchCriteria);
-
-        return $orders;
     }
 
     /**

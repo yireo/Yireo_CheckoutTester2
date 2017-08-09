@@ -24,11 +24,6 @@ class Success extends \Magento\Framework\App\Action\Action
     protected $resultPageFactory;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
-     */
-    protected $orderRepository;
-
-    /**
      * @var \Magento\Framework\Registry
      */
     protected $registry;
@@ -43,52 +38,61 @@ class Success extends \Magento\Framework\App\Action\Action
      */
     protected $moduleHelper;
 
+
+    /**
+     * @var \Yireo\CheckoutTester2\Helper\Order
+     */
+    protected $orderHelper;
+
     /**
      * Success constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Checkout\Model\Session $checkoutSession
      * @param \Yireo\CheckoutTester2\Helper\Data $moduleHelper
+     * @param \Yireo\CheckoutTester2\Helper\Order $orderHelper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
         \Magento\Framework\Registry $registry,
         \Magento\Checkout\Model\Session $checkoutSession,
-        \Yireo\CheckoutTester2\Helper\Data $moduleHelper
+        \Yireo\CheckoutTester2\Helper\Data $moduleHelper,
+        \Yireo\CheckoutTester2\Helper\Order $orderHelper
     )
     {
         parent::__construct($context);
 
         $this->resultPageFactory = $resultPageFactory;
-        $this->orderRepository = $orderRepository;
         $this->registry = $registry;
         $this->checkoutSession = $checkoutSession;
         $this->moduleHelper = $moduleHelper;
+        $this->orderHelper = $orderHelper;
     }
 
     /**
      * Success page action
      *
      * @return \Magento\Backend\Model\View\Result\Page
+     *
+     * @throws \Yireo\CheckoutTester2\Exception\ForbiddenAccess
+     * @throws \Yireo\CheckoutTester2\Exception\InvalidOrderId
      */
     public function execute()
     {
         // Check access
         if ($this->moduleHelper->hasAccess() == false) {
-            die('Access denied');
+            throw new \Yireo\CheckoutTester2\Exception\ForbiddenAccess('Access denied');
         }
 
         // Fetch the order
         $order = $this->getOrder();
 
         // Fail when there is no valid order
-        if ($order == false) {
-            throw new \Psr\Log\InvalidArgumentException('Invalid order ID');
+        if (!$order->getEntityId()) {
+            throw new \Yireo\CheckoutTester2\Exception\InvalidOrderId('Invalid order ID');
         }
 
         // Register this order
@@ -104,72 +108,38 @@ class Success extends \Magento\Framework\App\Action\Action
     /**
      * Method to fetch the current order
      *
-     * @return false|\Magento\Sales\Model\Order
+     * @return \Magento\Sales\Api\Data\OrderInterface
      */
     protected function getOrder()
     {
         $orderIdFromUrl = (int)$this->getRequest()->getParam('order_id');
-        $order = $this->loadOrder($orderIdFromUrl);
-        if ($order) {
+        $order = $this->orderHelper->getOrderById($orderIdFromUrl);
+        if ($order->getEntityId()) {
             return $order;
         }
 
-        $orderIdFromConfig = (int)$this->moduleHelper->getOrderIdFromConfig();
-        $order = $this->loadOrder($orderIdFromConfig);
-        if ($order) {
+        $orderIdFromConfig = (int)$this->orderHelper->getOrderIdFromConfig();
+        $order = $this->orderHelper->getOrderById($orderIdFromConfig);
+        if ($order->getEntityId()) {
             return $order;
         }
 
-        $lastOrderId = $this->moduleHelper->getLastInsertedOrderId();
-        $order = $this->loadOrder($lastOrderId);
-        if ($order) {
+        $lastOrderId = $this->orderHelper->getLastInsertedOrderId();
+        $order = $this->orderHelper->getOrderById($lastOrderId);
+
+        if ($order->getEntityId()) {
             return $order;
         }
 
-        return false;
-    }
-
-    /**
-     * Method to try to load an order from an unvalidated ID
-     *
-     * @param int $orderId
-     *
-     * @return false|\Magento\Sales\Model\Order
-     */
-    protected function loadOrder($orderId)
-    {
-        $order = $this->getOrderById($orderId);
-        if ($order !== false && $order->getId() > 0) {
-            return $order;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param int $orderId
-     *
-     * @return false|\Magento\Sales\Model\Order
-     */
-    protected function getOrderById($orderId)
-    {
-        if (empty($orderId)) {
-            return false;
-        }
-
-        try {
-            return $this->orderRepository->get($orderId);
-        } catch (\Magento\Framework\Exception\NoSuchEntityException $exception) {
-            return false;
-        }
+        return $this->orderHelper->getEmptyOrder();
     }
 
     /**
      * Method to register the order in this session
      *
-     * @param \Magento\Sales\Model\Order $order
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
      */
-    protected function registerOrder($order)
+    protected function registerOrder(\Magento\Sales\Api\Data\OrderInterface $order)
     {
         // Register this order as the current order
         $currentOrder = $this->registry->registry('current_order');
@@ -178,7 +148,7 @@ class Success extends \Magento\Framework\App\Action\Action
         }
 
         // Load the session with this order
-        $this->checkoutSession->setLastOrderId($order->getId())
+        $this->checkoutSession->setLastOrderId($order->getEntityId())
             ->setLastRealOrderId($order->getIncrementId());
 
         // Optionally dispatch an event
@@ -188,12 +158,12 @@ class Success extends \Magento\Framework\App\Action\Action
     /**
      * Method to optionally dispatch order-related events
      *
-     * @param \Magento\Sales\Model\Order $order
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
      */
-    public function dispatchEvents($order)
+    public function dispatchEvents(\Magento\Sales\Api\Data\OrderInterface $order)
     {
         if ($this->moduleHelper->allowDispatchCheckoutOnepageControllerSuccessAction()) {
-            $this->_eventManager->dispatch('checkout_onepage_controller_success_action', array('order_ids' => array($order->getId())));
+            $this->_eventManager->dispatch('checkout_onepage_controller_success_action', array('order_ids' => array($order->getEntityId())));
         }
     }
 }
