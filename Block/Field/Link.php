@@ -19,11 +19,34 @@ namespace Yireo\CheckoutTester2\Block\Field;
 class Link extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**
+     * Note: This model is needed and not $_urlBuilder() or $_storeManager->getUrl() because of issue 5322
+     *
+     * @var \Magento\Framework\Url
+     */
+    protected $urlModel;
+
+    /**
+     * Link constructor.
+     *
+     * @param \Magento\Framework\Url $urlModel
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param array $data
+     */
+    public function __construct(
+        \Magento\Framework\Url $urlModel,
+        \Magento\Backend\Block\Template\Context $context,
+        array $data = [])
+    {
+        $this->urlModel = $urlModel;
+        parent::__construct($context, $data);
+    }
+
+    /**
      * Return the elements HTML value
      *
      * @return string
      */
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element) : string
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element): string
     {
         $link = $this->getFrontendLink();
         $html = '<a href="' . $link . '" target="_new">'
@@ -43,19 +66,26 @@ class Link extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    public function getFrontendLink() : string
+    public function getFrontendLink(): string
     {
         $storeId = $this->_getStoreId();
-        return $this->_storeManager->getStore($storeId)->getUrl('checkouttester/index/success');
+        $url = $this->urlModel->setScope($storeId)->getUrl('checkouttester/index/success');
+
+        return $url;
     }
 
     /**
      * Return store id of current configuration scope
      *
-     * @return int
+     * @return string
      */
-    protected function _getStoreId() : int
+    protected function _getStoreId(): string
     {
-        return $this->_storeManager->getStore()->getId();
+        $storeId = $this->_request->getParam('store');
+        if (!empty($storeId)) {
+            return (string) $storeId;
+        }
+
+        return (string)$this->_storeManager->getStore()->getCode();
     }
 }
