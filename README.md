@@ -1,9 +1,10 @@
 # CheckoutTester module for Magento 2
-Homepage: http://www.yireo.com/software/magento-extensions/checkout-tester-2
+Homepage: https://www.yireo.com/software/magento-extensions/checkout-tester-2
 
 Requirements:
 * Magento 2.0.0 Stable
 * Magento 2.1.0 Stable
+* PHP 7.0 or higher
 
 ## Installation
 We recommend `composer` to install this package. Install our module using the following command:
@@ -18,5 +19,5 @@ Next, install the new module into Magento itself:
 * Configure settings under **Stores > Configuration > Advanced > Yireo CheckoutTester**
 * Done
 
-## Unit testing
-This extension does not ship with unit tests.
+## Testing
+This extension does not ship with unit tests or integration tests ... yet.
