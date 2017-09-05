@@ -23,9 +23,9 @@ use \Yireo\CheckoutTester2\Helper\Data as Target;
 class DataTest extends \PHPUnit_Framework_TestCase
 {
 	/**
-	 * @var array
+	 * Import mocking behaviour
 	 */
-	protected $scopeConfigValues = [];
+    use \Yireo\CheckoutTester2\Test\Unit\Mock\HelperContextMock;
 
 	/**
 	 * Test whether the enabled flag works
@@ -83,52 +83,15 @@ class DataTest extends \PHPUnit_Framework_TestCase
 	{
 		$context = $this->getContextMock();
 
-		$target = new Target($context);
+        $request = $this->getRequestMock();
+        $context->expects($this->any())
+            ->method('getRequest')
+            ->will($this->returnValue($request)
+            );
+
+        $target = new Target($context);
 
 		return $target;
-	}
-
-	/**
-	 * @return \Magento\Framework\App\Helper\Context
-	 */
-	protected function getContextMock()
-	{
-		$context = $this->createMock(
-			'Magento\Framework\App\Helper\Context',
-			[],
-			[],
-			'',
-			false,
-			false
-		);
-
-		$scopeConfig = $this->getScopeConfigMock();
-		$context->expects($this->any())
-			->method('getScopeConfig')
-			->will($this->returnValue($scopeConfig)
-			);
-
-		$request = $this->getRequestMock();
-		$context->expects($this->any())
-			->method('getRequest')
-			->will($this->returnValue($request)
-			);
-
-		return $context;
-	}
-
-	/**
-	 * @return \Magento\Framework\App\Config\ScopeConfigInterface
-	 */
-	protected function getScopeConfigMock()
-	{
-		$scopeConfig = $this->createMock('Magento\Framework\App\Config\ScopeConfigInterface');
-
-		$scopeConfig->expects($this->any())
-			->method('getValue')
-			->will($this->returnValueMap($this->getScopeConfigValues()));
-
-		return $scopeConfig;
 	}
 
 	/**
@@ -149,22 +112,5 @@ class DataTest extends \PHPUnit_Framework_TestCase
             ->willReturn('127.0.0.1');
 
 		return $request;
-	}
-
-    /**
-     * @return array
-     */
-	protected function getScopeConfigValues()
-    {
-        return array_values($this->scopeConfigValues);
-    }
-
-	/**
-	 * @return array
-	 */
-	protected function setScopeConfigValue($name, $value)
-	{
-	    $scope = 'store';
-		$this->scopeConfigValues[$name] = [$name, $scope, null, $value];
 	}
 }
