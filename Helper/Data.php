@@ -50,7 +50,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function hasAccess() : bool
     {
         $ip = (string)$this->getConfigValue('ip');
-        $ip = trim($ip);
+        if (!is_null($ip)) {
+            $ip = trim($ip);
+        }
 
         $realIp = $this->getIpAddress();
 
