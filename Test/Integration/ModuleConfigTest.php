@@ -9,6 +9,7 @@
  */
 
 declare(strict_types = 1);
+
 namespace Yireo\CheckoutTester2\Test\Integration;
 
 use Magento\Framework\Component\ComponentRegistrar;

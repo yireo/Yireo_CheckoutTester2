@@ -13,6 +13,7 @@
     <module name="Yireo_CheckoutTester2" setup_version="0.0.7">
         <sequence>
             <module name="Magento_Checkout"/>
+            <module name="Magento_Store"/>
         </sequence>
     </module>
 </config>
