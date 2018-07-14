@@ -12,14 +12,16 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Block\Field;
 
+use PHPUnit\Framework\TestCase;
 use \Yireo\CheckoutTester2\Block\Field\Link as Target;
+use Yireo\CheckoutTester2\Test\Unit\Mock\BlockContextMock;
 
 /**
  * Class LinkTest
  *
  * @package Yireo\CheckoutTester2\Test\Unit\Block\Field
  */
-class LinkTest extends \PHPUnit_Framework_TestCase
+class LinkTest extends TestCase
 {
     /**
      * @var string
@@ -29,7 +31,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
     /**
      * Import mocking behaviour
      */
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\BlockContextMock;
+    use BlockContextMock;
 
     /**
      * @return Target

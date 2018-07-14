@@ -12,14 +12,16 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Block;
 
+use PHPUnit\Framework\TestCase;
 use \Yireo\CheckoutTester2\Block\Success as Target;
+use Yireo\CheckoutTester2\Test\Unit\Mock\BlockContextMock;
 
 /**
  * Class SuccessTest
  *
  * @package Yireo\CheckoutTester2\Test\Unit\Block
  */
-class SuccessTest extends \PHPUnit_Framework_TestCase
+class SuccessTest extends TestCase
 {
     /**
      * @var string
@@ -29,7 +31,7 @@ class SuccessTest extends \PHPUnit_Framework_TestCase
     /**
      * Import mocking behaviour
      */
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\BlockContextMock;
+    use BlockContextMock;
 
     /**
      * @return Target

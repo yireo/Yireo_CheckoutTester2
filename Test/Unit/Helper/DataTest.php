@@ -12,20 +12,24 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Helper;
 
+use Magento\Framework\App\Request\Http;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use \Yireo\CheckoutTester2\Helper\Data as Target;
+use Yireo\CheckoutTester2\Test\Unit\Mock\HelperContextMock;
 
 /**
  * Class DataTest
  *
  * @package Yireo\CheckoutTester2\Test\Unit\Helper
  */
-class DataTest extends \PHPUnit_Framework_TestCase
+class DataTest extends TestCase
 {
 	/**
 	 * Import mocking behaviour
 	 */
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\HelperContextMock;
+    use HelperContextMock;
 
 	/**
 	 * Test whether the enabled flag works
@@ -94,12 +98,12 @@ class DataTest extends \PHPUnit_Framework_TestCase
 		return $target;
 	}
 
-	/**
-	 * @return \Magento\Framework\App\Request\Http
-	 */
+    /**
+     * @return MockObject
+     */
 	protected function getRequestMock()
 	{
-		$request = $this->createMock('Magento\Framework\App\Request\Http',
+		$request = $this->createMock(Http::class,
 			[],
 			[],
 			'',
