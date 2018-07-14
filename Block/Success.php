@@ -9,6 +9,7 @@
  */
 
 declare(strict_types = 1);
+
 namespace Yireo\CheckoutTester2\Block;
 
 use \Magento\Framework\View\Element\Template;

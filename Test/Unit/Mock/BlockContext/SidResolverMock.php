@@ -12,6 +12,8 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext;
 
+use Magento\Framework\Session\SidResolverInterface;
+
 /**
  * Class SidResolverMock
  *
@@ -20,11 +22,11 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext;
 trait SidResolverMock
 {
     /**
-     * @return \Magento\Framework\Session\SidResolverInterface
+     * @return SidResolverInterface
      */
     protected function getSidResolverMock()
     {
-        $mock = $this->createMock('Magento\Framework\Session\SidResolverInterface');
+        $mock = $this->createMock(SidResolverInterface::class);
 
         $mock->expects($this->any())
             ->method('getSessionIdQueryParam')

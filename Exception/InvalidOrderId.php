@@ -9,14 +9,16 @@
  */
 
 declare(strict_types = 1);
+
 namespace Yireo\CheckoutTester2\Exception;
+
+use Exception;
 
 /**
  * Class InvalidOrderId
  *
  * @package Yireo\CheckoutTester2\Exception
  */
-class InvalidOrderId extends \Exception
+class InvalidOrderId extends Exception
 {
-
 }

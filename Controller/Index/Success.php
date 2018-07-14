@@ -9,7 +9,20 @@
  */
 
 declare(strict_types = 1);
+
 namespace Yireo\CheckoutTester2\Controller\Index;
+
+use Magento\Backend\App\Action\Context;
+use Magento\Backend\Model\View\Result\Page;
+use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\Registry;
+use Magento\Framework\View\Result\PageFactory;
+use Magento\Sales\Api\Data\OrderInterface;
+use Yireo\CheckoutTester2\Exception\ForbiddenAccess;
+use Yireo\CheckoutTester2\Exception\InvalidOrderId;
+use Yireo\CheckoutTester2\Helper\Data;
+use Yireo\CheckoutTester2\Helper\Order;
 
 /**
  * CheckoutTester frontend controller
@@ -17,53 +30,52 @@ namespace Yireo\CheckoutTester2\Controller\Index;
  * @category    CheckoutTester2
  * @package Yireo\CheckoutTester2\Controller\Index
  */
-class Success extends \Magento\Framework\App\Action\Action
+class Success extends Action
 {
     /**
-     * @var \Magento\Framework\View\Result\PageFactory
+     * @var PageFactory
      */
     protected $resultPageFactory;
 
     /**
-     * @var \Magento\Framework\Registry
+     * @var Registry
      */
     protected $registry;
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     protected $checkoutSession;
 
     /**
-     * @var \Yireo\CheckoutTester2\Helper\Data
+     * @var Data
      */
     protected $moduleHelper;
 
 
     /**
-     * @var \Yireo\CheckoutTester2\Helper\Order
+     * @var Order
      */
     protected $orderHelper;
 
     /**
      * Success constructor.
      *
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Checkout\Model\Session $checkoutSession
-     * @param \Yireo\CheckoutTester2\Helper\Data $moduleHelper
-     * @param \Yireo\CheckoutTester2\Helper\Order $orderHelper
+     * @param Context $context
+     * @param PageFactory $resultPageFactory
+     * @param Registry $registry
+     * @param Session $checkoutSession
+     * @param Data $moduleHelper
+     * @param Order $orderHelper
      */
     public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\Registry $registry,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Yireo\CheckoutTester2\Helper\Data $moduleHelper,
-        \Yireo\CheckoutTester2\Helper\Order $orderHelper
-    )
-    {
+        Context $context,
+        PageFactory $resultPageFactory,
+        Registry $registry,
+        Session $checkoutSession,
+        Data $moduleHelper,
+        Order $orderHelper
+    ) {
         parent::__construct($context);
 
         $this->resultPageFactory = $resultPageFactory;
@@ -76,16 +88,16 @@ class Success extends \Magento\Framework\App\Action\Action
     /**
      * Success page action
      *
-     * @return \Magento\Backend\Model\View\Result\Page
+     * @return Page
      *
-     * @throws \Yireo\CheckoutTester2\Exception\ForbiddenAccess
-     * @throws \Yireo\CheckoutTester2\Exception\InvalidOrderId
+     * @throws ForbiddenAccess
+     * @throws InvalidOrderId
      */
     public function execute()
     {
         // Check access
         if ($this->moduleHelper->hasAccess() == false) {
-            throw new \Yireo\CheckoutTester2\Exception\ForbiddenAccess('Access denied');
+            throw new ForbiddenAccess('Access denied');
         }
 
         // Fetch the order
@@ -93,13 +105,13 @@ class Success extends \Magento\Framework\App\Action\Action
 
         // Fail when there is no valid order
         if (!$order->getEntityId()) {
-            throw new \Yireo\CheckoutTester2\Exception\InvalidOrderId('Invalid order ID');
+            throw new InvalidOrderId('Invalid order ID');
         }
 
         // Register this order
         $this->registerOrder($order);
 
-        /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
+        /** @var Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
         $resultPage->addHandle('checkouttester_index_index');
 
@@ -109,9 +121,9 @@ class Success extends \Magento\Framework\App\Action\Action
     /**
      * Method to fetch the current order
      *
-     * @return \Magento\Sales\Api\Data\OrderInterface
+     * @return OrderInterface
      */
-    protected function getOrder() : \Magento\Sales\Api\Data\OrderInterface
+    protected function getOrder() : OrderInterface
     {
         $orderIdFromUrl = (int)$this->getRequest()->getParam('order_id');
         $order = $this->orderHelper->getOrderById($orderIdFromUrl);
@@ -138,9 +150,9 @@ class Success extends \Magento\Framework\App\Action\Action
     /**
      * Method to register the order in this session
      *
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      */
-    protected function registerOrder(\Magento\Sales\Api\Data\OrderInterface $order)
+    protected function registerOrder(OrderInterface $order)
     {
         // Register this order as the current order
         $currentOrder = $this->registry->registry('current_order');
@@ -159,12 +171,13 @@ class Success extends \Magento\Framework\App\Action\Action
     /**
      * Method to optionally dispatch order-related events
      *
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      */
-    public function dispatchEvents(\Magento\Sales\Api\Data\OrderInterface $order)
+    public function dispatchEvents(OrderInterface $order)
     {
         if ($this->moduleHelper->allowDispatchCheckoutOnepageControllerSuccessAction()) {
-            $this->_eventManager->dispatch('checkout_onepage_controller_success_action', array('order_ids' => array($order->getEntityId())));
+            $eventData = array('order_ids' => array($order->getEntityId()));
+            $this->_eventManager->dispatch('checkout_onepage_controller_success_action', $eventData);
         }
     }
 }

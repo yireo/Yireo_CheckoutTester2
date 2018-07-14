@@ -9,22 +9,26 @@
  */
 
 declare(strict_types = 1);
+
 namespace Yireo\CheckoutTester2\Helper;
+
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * Class \Yireo\CheckoutTester2\Helper\Data
  */
-class Data extends \Magento\Framework\App\Helper\AbstractHelper
+class Data extends AbstractHelper
 {
     /**
      * Data constructor.
      *
-     * @param \Magento\Framework\App\Helper\Context $context
+     * @param Context $context
      */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context
-    )
-    {
+        Context $context
+    ) {
         return parent::__construct($context);
     }
 
@@ -123,10 +127,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $value = $this->scopeConfig->getValue(
             $key,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE
         );
-
-        //print_r($this->scopeConfig);exit;
 
         if (empty($value)) {
             $value = $defaultValue;

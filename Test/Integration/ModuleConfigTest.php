@@ -15,13 +15,14 @@ namespace Yireo\CheckoutTester2\Test\Integration;
 use Magento\Framework\Component\ComponentRegistrar;
 use Magento\Framework\Module\ModuleList;
 use Magento\TestFramework\ObjectManager;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ModuleConfigTest
  *
  * @package Yireo\CheckoutTester2\Test\Integration
  */
-class ModuleConfigTest extends \PHPUnit_Framework_TestCase
+class ModuleConfigTest extends TestCase
 {
     /**
      * @var string
@@ -33,12 +34,18 @@ class ModuleConfigTest extends \PHPUnit_Framework_TestCase
      */
     private $objectManager;
 
+    /**
+     * Setup
+     */
     protected function setUp()
     {
         $this->subjectModuleName = 'Yireo_CheckoutTester2';
         $this->objectManager = ObjectManager::getInstance();
     }
 
+    /**
+     * Test if the module is registered
+     */
     public function testModuleIsRegistered()
     {
         $registrar = new ComponentRegistrar();

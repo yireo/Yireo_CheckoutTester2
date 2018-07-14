@@ -12,6 +12,9 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Mock;
 
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\View\Element\Template\Context as TemplateContext;
+
 /**
  * Class DataTest
  *
@@ -57,13 +60,13 @@ trait BlockContextMock
     }
 
     /**
-     * @return \Magento\Framework\View\Element\Template\Context|\Magento\Backend\Block\Template\Context
+     * @return TemplateContext|Context
      */
     protected function getContextMock($area = 'frontend')
     {
-        $contextClass = \Magento\Framework\View\Element\Template\Context::class;
+        $contextClass = TemplateContext::class;
         if ($area == 'adminhtml') {
-            $contextClass = \Magento\Backend\Block\Template\Context::class;
+            $contextClass = Context::class;
         }
 
         $context = $this->createMock(
@@ -78,14 +81,12 @@ trait BlockContextMock
         $scopeConfig = $this->getScopeConfigMock();
         $context->expects($this->any())
             ->method('getScopeConfig')
-            ->will($this->returnValue($scopeConfig)
-            );
+            ->will($this->returnValue($scopeConfig));
 
         $eventManager = $this->getEventManagerMock();
         $context->expects($this->any())
             ->method('getEventManager')
-            ->will($this->returnValue($eventManager)
-            );
+            ->will($this->returnValue($eventManager));
 
         $context->expects($this->any())
             ->method('getCache')

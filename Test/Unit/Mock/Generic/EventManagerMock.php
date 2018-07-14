@@ -12,6 +12,8 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 
+use Magento\Framework\Event\ManagerInterface;
+
 /**
  * Class EventManagerMock
  *
@@ -20,11 +22,11 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 trait EventManagerMock
 {
     /**
-     * @return \Magento\Framework\Event\ManagerInterface
+     * @return ManagerInterface
      */
     protected function getEventManagerMock()
     {
-        $eventManager = $this->createMock('Magento\Framework\Event\ManagerInterface');
+        $eventManager = $this->createMock(ManagerInterface::class);
 
         return $eventManager;
     }

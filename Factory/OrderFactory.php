@@ -9,7 +9,11 @@
  */
 
 declare(strict_types = 1);
+
 namespace Yireo\CheckoutTester2\Factory;
+
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 
 /**
  * Class \Yireo\CheckoutTester2\Factory\OrderFactory
@@ -19,12 +23,11 @@ class OrderFactory
     /**
      * OrderFactory constructor.
      *
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param ObjectManagerInterface $objectManager
      */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager
-    )
-    {
+        ObjectManagerInterface $objectManager
+    ) {
         $this->objectManager = $objectManager;
     }
 
@@ -33,6 +36,6 @@ class OrderFactory
      */
     public function create()
     {
-        return $this->objectManager->create(\Magento\Sales\Api\Data\OrderInterface::class);
+        return $this->objectManager->create(OrderInterface::class);
     }
 }

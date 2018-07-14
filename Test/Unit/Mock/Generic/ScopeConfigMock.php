@@ -12,6 +12,8 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
+
 /**
  * Class DataTest
  *
@@ -25,11 +27,11 @@ trait ScopeConfigMock
     protected $scopeConfigValues = [];
 
     /**
-     * @return \Magento\Framework\App\Config\ScopeConfigInterface
+     * @return ScopeConfigInterface
      */
     protected function getScopeConfigMock()
     {
-        $scopeConfig = $this->createMock('Magento\Framework\App\Config\ScopeConfigInterface');
+        $scopeConfig = $this->createMock(ScopeConfigInterface::class);
 
         $scopeConfig->expects($this->any())
             ->method('getValue')

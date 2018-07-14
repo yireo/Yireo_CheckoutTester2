@@ -12,6 +12,9 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 
+use Magento\Framework\Url;
+use Magento\Framework\UrlInterface;
+
 /**
  * Class UrlBuilderMock
  *
@@ -20,11 +23,11 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 trait UrlBuilderMock
 {
     /**
-     * @return \Magento\Framework\UrlInterface
+     * @return UrlInterface
      */
     protected function getUrlBuilderMock()
     {
-        $mock = $this->createMock('Magento\Framework\UrlInterface');
+        $mock = $this->createMock(UrlInterface::class);
 
         $mock->expects($this->any())
             ->method('getUrl')
@@ -34,11 +37,11 @@ trait UrlBuilderMock
     }
 
     /**
-     * @return \Magento\Framework\Url
+     * @return Url
      */
     protected function getUrlMock()
     {
-        $mock = $this->createMock('Magento\Framework\Url');
+        $mock = $this->createMock(Url::class);
 
         $mock->expects($this->any())
             ->method('getUrl')

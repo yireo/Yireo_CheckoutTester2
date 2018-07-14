@@ -12,6 +12,8 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext;
 
+use Magento\Framework\App\CacheInterface;
+
 /**
  * Class CacheMock
  *
@@ -20,11 +22,11 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext;
 trait CacheMock
 {
     /**
-     * @return \Magento\Framework\App\CacheInterface
+     * @return CacheInterface
      */
     protected function getCacheMock()
     {
-        $mock = $this->createMock('Magento\Framework\App\CacheInterface');
+        $mock = $this->createMock(CacheInterface::class);
 
         $mock->expects($this->any())
             ->method('load')

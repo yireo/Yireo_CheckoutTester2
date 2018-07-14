@@ -12,6 +12,8 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext;
 
+use Magento\Framework\View\Element\Template\File\Resolver;
+
 /**
  * Class FileResolverMock
  *
@@ -20,11 +22,11 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext;
 trait FileResolverMock
 {
     /**
-     * @return \Magento\Framework\View\Element\Template\File\Resolver
+     * @return Resolver
      */
     protected function getResolverMock()
     {
-        $mock = $this->createMock('Magento\Framework\View\Element\Template\File\Resolver');
+        $mock = $this->createMock(Resolver::class);
 
         $mock->expects($this->any())
             ->method('getTemplateFileName')

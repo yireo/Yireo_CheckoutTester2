@@ -12,6 +12,8 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 
+use Magento\Framework\Session\SessionManagerInterface;
+
 /**
  * Class SessionMock
  *
@@ -20,11 +22,11 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 trait SessionMock
 {
     /**
-     * @return \Magento\Framework\Session\SessionManagerInterface
+     * @return SessionManagerInterface
      */
     protected function getSessionMock()
     {
-        $mock = $this->createMock('Magento\Framework\Session\SessionManagerInterface');
+        $mock = $this->createMock(SessionManagerInterface::class);
 
         return $mock;
     }

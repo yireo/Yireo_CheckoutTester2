@@ -12,6 +12,9 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\StoreManagerInterface;
+
 /**
  * Class StoreManagerMock
  *
@@ -20,11 +23,11 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 trait StoreManagerMock
 {
     /**
-     * @return \Magento\Store\Model\StoreManagerInterface
+     * @return StoreManagerInterface
      */
     protected function getStoreManagerMock()
     {
-        $mock = $this->createMock('Magento\Store\Model\StoreManagerInterface');
+        $mock = $this->createMock(StoreManagerInterface::class);
 
         $mock->expects($this->any())
             ->method('getStore')
@@ -34,11 +37,11 @@ trait StoreManagerMock
     }
 
     /**
-     * @return \Magento\Store\Api\Data\StoreInterface
+     * @return StoreInterface
      */
     protected function getStoreMock()
     {
-        $mock = $this->createMock('Magento\Store\Api\Data\StoreInterface');
+        $mock = $this->createMock(StoreInterface::class);
 
         $mock->expects($this->any())
             ->method('getCode')

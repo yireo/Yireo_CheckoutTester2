@@ -8,10 +8,16 @@
  * @license     Open Source License (OSL v3)
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace Yireo\CheckoutTester2\Helper;
 
 use Magento\Eav\Model\Entity\Collection\AbstractCollection;
+use Magento\Framework\Api\Search\SearchCriteriaBuilder;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\OrderSearchResultInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Yireo\CheckoutTester2\Factory\OrderFactory;
 
 /**
  * Class \Yireo\CheckoutTester2\Helper\Order
@@ -19,32 +25,32 @@ use Magento\Eav\Model\Entity\Collection\AbstractCollection;
 class Order
 {
     /**
-     * @var \Yireo\CheckoutTester2\Factory\OrderFactory
+     * @var OrderFactory
      */
     protected $orderFactory;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     * @var OrderRepositoryInterface
      */
     protected $orderRepository;
 
     /**
-     * @var \Magento\Framework\Api\Search\SearchCriteriaBuilder
+     * @var SearchCriteriaBuilder
      */
     protected $searchCriteriaBuilder;
 
     /**
      * Data constructor.
      *
-     * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-     * @param \Magento\Framework\Api\Search\SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param OrderFactory $orderFactory
+     * @param OrderRepositoryInterface $orderRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
-        \Yireo\CheckoutTester2\Factory\OrderFactory $orderFactory,
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \Magento\Framework\Api\Search\SearchCriteriaBuilder $searchCriteriaBuilder
-    )
-    {
+        OrderFactory $orderFactory,
+        OrderRepositoryInterface $orderRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder
+    ) {
         $this->orderFactory = $orderFactory;
         $this->orderRepository = $orderRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -77,7 +83,7 @@ class Order
     }
 
     /**
-     * @return \Magento\Sales\Api\Data\OrderInterface
+     * @return OrderInterface
      */
     public function getEmptyOrder()
     {
@@ -87,7 +93,7 @@ class Order
     /**
      * @param $orderId
      *
-     * @return \Magento\Sales\Api\Data\OrderInterface
+     * @return OrderInterface
      */
     public function getOrderById($orderId)
     {
@@ -103,7 +109,7 @@ class Order
     }
 
     /**
-     * @return \Magento\Sales\Api\Data\OrderSearchResultInterface
+     * @return OrderSearchResultInterface
      */
     protected function getOrderCollection()
     {

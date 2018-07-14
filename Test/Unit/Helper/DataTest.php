@@ -8,7 +8,7 @@
  * @license     Open Source License (OSL v3)
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Yireo\CheckoutTester2\Test\Unit\Helper;
 
@@ -26,34 +26,34 @@ use Yireo\CheckoutTester2\Test\Unit\Mock\HelperContextMock;
  */
 class DataTest extends TestCase
 {
-	/**
-	 * Import mocking behaviour
-	 */
+    /**
+     * Import mocking behaviour
+     */
     use HelperContextMock;
 
-	/**
-	 * Test whether the enabled flag works
-	 */
-	public function testEnabled()
-	{
-		$this->setScopeConfigValue('checkouttester2/settings/enabled', 1);
-		$target = $this->getTargetObject();
-		$this->assertSame(true, $target->enabled());
+    /**
+     * Test whether the enabled flag works
+     */
+    public function testEnabled()
+    {
+        $this->setScopeConfigValue('checkouttester2/settings/enabled', 1);
+        $target = $this->getTargetObject();
+        $this->assertSame(true, $target->enabled());
 
-		$this->setScopeConfigValue('checkouttester2/settings/enabled', 0);
-		$target = $this->getTargetObject();
-		$this->assertSame(false, $target->enabled());
-	}
+        $this->setScopeConfigValue('checkouttester2/settings/enabled', 0);
+        $target = $this->getTargetObject();
+        $this->assertSame(false, $target->enabled());
+    }
 
-	/**
-	 * Test whether the URL returns some value
-	 */
-	public function testHasAccess()
-	{
+    /**
+     * Test whether the URL returns some value
+     */
+    public function testHasAccess()
+    {
         $this->setScopeConfigValue('checkouttester2/settings/ip', '127.0.0.1');
         $target = $this->getTargetObject();
         $this->assertSame(true, $target->hasAccess());
-	}
+    }
 
     /**
      * Test whether the URL returns some value
@@ -80,41 +80,41 @@ class DataTest extends TestCase
         $this->assertSame(false, $target->allowDispatchCheckoutOnepageControllerSuccessAction());
     }
 
-	/**
-	 * @return Target
-	 */
-	protected function getTargetObject()
-	{
-		$context = $this->getContextMock();
+    /**
+     * @return Target
+     */
+    protected function getTargetObject()
+    {
+        $context = $this->getContextMock();
 
         $request = $this->getRequestMock();
         $context->expects($this->any())
             ->method('getRequest')
-            ->will($this->returnValue($request)
-            );
+            ->will($this->returnValue($request));
 
         $target = new Target($context);
 
-		return $target;
-	}
+        return $target;
+    }
 
     /**
      * @return MockObject
      */
-	protected function getRequestMock()
-	{
-		$request = $this->createMock(Http::class,
-			[],
-			[],
-			'',
-			false,
-			false
-		);
+    protected function getRequestMock()
+    {
+        $request = $this->createMock(
+            Http::class,
+            [],
+            [],
+            '',
+            false,
+            false
+        );
 
         $request->expects($this->any())
             ->method('getClientIp')
             ->willReturn('127.0.0.1');
 
-		return $request;
-	}
+        return $request;
+    }
 }

@@ -13,7 +13,7 @@ declare(strict_types = 1);
 namespace Yireo\CheckoutTester2\Test\Unit\Block;
 
 use PHPUnit\Framework\TestCase;
-use \Yireo\CheckoutTester2\Block\Success as Target;
+use Yireo\CheckoutTester2\Block\Success as Target;
 use Yireo\CheckoutTester2\Test\Unit\Mock\BlockContextMock;
 
 /**

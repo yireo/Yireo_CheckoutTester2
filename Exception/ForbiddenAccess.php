@@ -9,14 +9,16 @@
  */
 
 declare(strict_types = 1);
+
 namespace Yireo\CheckoutTester2\Exception;
+
+use Exception;
 
 /**
  * Class ForbiddenAccess
  *
  * @package Yireo\CheckoutTester2\Exception
  */
-class ForbiddenAccess extends \Exception
+class ForbiddenAccess extends Exception
 {
-
 }
