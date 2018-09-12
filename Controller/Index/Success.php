@@ -108,13 +108,13 @@ class Success extends Action
             throw new InvalidOrderId('Invalid order ID');
         }
 
-        // Register this order
-        $this->registerOrder($order);
-
         /** @var Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
         $resultPage->addHandle('checkouttester_index_index');
 
+        // Register this order
+        $this->registerOrder($order);
+        
         return $resultPage;
     }
 
