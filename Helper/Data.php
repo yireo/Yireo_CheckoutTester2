@@ -87,7 +87,9 @@ class Data extends AbstractHelper
      */
     public function getIpAddress() : string
     {
-        return $this->_request->getClientIp();
+        $ip = $this->_request->getClientIp();
+        $forwarded = explode(', ', $ip);
+        return ($forwarded ? $forwarded[0] : $ip);
     }
 
     /**
