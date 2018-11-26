@@ -13,6 +13,3 @@ Next, install the new module into Magento itself. The following steps assume you
 * Flush the Magento cache
 * Configure settings under **Stores > Configuration > Advanced > Yireo CheckoutTester**
 * Done
-
-## Testing
-This extension does not ship with unit tests or integration tests ... yet.
