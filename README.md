@@ -2,3 +2,4 @@
 
 ## See also:
 - [Installation](INSTALL.md)
+- [Usage](USAGE.md)
