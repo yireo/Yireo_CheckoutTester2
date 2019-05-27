@@ -2,7 +2,7 @@
   "name": "yireo/magento2-checkouttester2",
   "license": "OSL-3.0",
   "type": "magento2-module",
-  "homepage": "https://www.yireo.com/software/magento-extensions/checkouttester2",
+  "homepage": "https://github.com/yireo/Yireo_CheckoutTester2",
   "description": "Checkout Tester for Magento 2",
   "keywords": [
     "composer-installer",
