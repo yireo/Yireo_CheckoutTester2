@@ -8,7 +8,7 @@
  * @license     Open Source License (OSL v3)
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Yireo\CheckoutTester2\Helper;
 
@@ -22,22 +22,11 @@ use Magento\Store\Model\ScopeInterface;
 class Data extends AbstractHelper
 {
     /**
-     * Data constructor.
-     *
-     * @param Context $context
-     */
-    public function __construct(
-        Context $context
-    ) {
-        return parent::__construct($context);
-    }
-
-    /**
      * Switch to determine whether this extension is enabled or not
      *
      * @return bool
      */
-    public function enabled() : bool
+    public function enabled(): bool
     {
         if ((bool)$this->getConfigValue('enabled')) {
             return true;
@@ -51,33 +40,32 @@ class Data extends AbstractHelper
      *
      * @return bool
      */
-    public function hasAccess() : bool
+    public function hasAccess(): bool
     {
         $ip = (string)$this->getConfigValue('ip');
-        if (!is_null($ip)) {
-            $ip = trim($ip);
-        }
+        $ip = trim($ip);
 
         $realIp = $this->getIpAddress();
 
-        if (!empty($ip) && $realIp) {
-            $ips = explode(',', $ip);
-
-            foreach ($ips as $ip) {
-                $ip = trim($ip);
-
-                if (empty($ip)) {
-                    continue;
-                }
-
-                if ($ip == $realIp) {
-                    return true;
-                }
-            }
+        if (!$ip || !$realIp) {
             return false;
         }
 
-        return true;
+        $ips = explode(',', $ip);
+
+        foreach ($ips as $ip) {
+            $ip = trim($ip);
+
+            if (empty($ip)) {
+                continue;
+            }
+
+            if ($ip == $realIp) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -85,7 +73,7 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getIpAddress() : string
+    public function getIpAddress(): string
     {
         $ip = $this->_request->getClientIp();
         $forwarded = explode(', ', $ip);
@@ -97,7 +85,7 @@ class Data extends AbstractHelper
      *
      * @return int
      */
-    public function getOrderIdFromConfig() : int
+    public function getOrderIdFromConfig(): int
     {
         return (int)$this->getConfigValue('order_id');
     }
@@ -107,7 +95,7 @@ class Data extends AbstractHelper
      *
      * @return bool
      */
-    public function allowDispatchCheckoutOnepageControllerSuccessAction() : bool
+    public function allowDispatchCheckoutOnepageControllerSuccessAction(): bool
     {
         return (bool)$this->getConfigValue('checkout_onepage_controller_success_action', false);
     }

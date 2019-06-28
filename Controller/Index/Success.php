@@ -8,7 +8,7 @@
  * @license     Open Source License (OSL v3)
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Yireo\CheckoutTester2\Controller\Index;
 
@@ -114,7 +114,7 @@ class Success extends Action
 
         // Register this order
         $this->registerOrder($order);
-        
+
         return $resultPage;
     }
 
@@ -123,7 +123,7 @@ class Success extends Action
      *
      * @return OrderInterface
      */
-    protected function getOrder() : OrderInterface
+    protected function getOrder(): OrderInterface
     {
         $orderIdFromUrl = (int)$this->getRequest()->getParam('order_id');
         $order = $this->orderHelper->getOrderById($orderIdFromUrl);
@@ -176,7 +176,7 @@ class Success extends Action
     public function dispatchEvents(OrderInterface $order)
     {
         if ($this->moduleHelper->allowDispatchCheckoutOnepageControllerSuccessAction()) {
-            $eventData = array('order_ids' => array($order->getEntityId()));
+            $eventData = ['order_ids' => [$order->getEntityId()]];
             $this->_eventManager->dispatch('checkout_onepage_controller_success_action', $eventData);
         }
     }
