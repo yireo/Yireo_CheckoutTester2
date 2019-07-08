@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Yireo CheckoutTester2 for Magento
+ *
+ * @package     Yireo_CheckoutTester2
+ * @author      Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2019 Yireo (https://www.yireo.com/)
+ * @license     Open Source License (OSL v3)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <checkouttester2>
+            <settings>
+                <enabled>1</enabled>
+                <order_id>0</order_id>
+                <ip/>
+                <checkout_onepage_controller_success_action>0</checkout_onepage_controller_success_action>
+            </settings>
+        </checkouttester2>
+    </default>
+</config>
