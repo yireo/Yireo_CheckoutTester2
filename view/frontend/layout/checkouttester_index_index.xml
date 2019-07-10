@@ -15,6 +15,6 @@
         <title>CheckoutTester Success Page</title>
     </head>
     <body>
-        <attribute name="class" value="checkout_onepage_success"/>
+        <attribute name="class" value="checkout-onepage-success"/>
     </body>
 </page>
