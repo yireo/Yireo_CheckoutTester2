@@ -97,7 +97,7 @@ class Success extends Action
     {
         // Check access
         if ($this->moduleHelper->hasAccess() === false) {
-            throw new ForbiddenAccess('Access denied');
+            throw new ForbiddenAccess('Access denied for IP ' . $this->moduleHelper->getIpAddress());
         }
 
         // Fetch the order
