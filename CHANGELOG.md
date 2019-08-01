@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.12] - August 2019
+### Added
+- Proper integration testing for browsing depending on config settings
+
+### Fixed
+- Settings for "enabled" and "ip" were not properly picked up
+
 ## [0.0.11] - July 2019
 ### Added
 - Add `version` to `composer.json`
