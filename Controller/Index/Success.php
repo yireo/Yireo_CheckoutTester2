@@ -96,7 +96,7 @@ class Success extends Action
     public function execute()
     {
         // Check access
-        if ($this->moduleHelper->hasAccess() == false) {
+        if ($this->moduleHelper->hasAccess() === false) {
             throw new ForbiddenAccess('Access denied');
         }
 
