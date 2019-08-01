@@ -95,6 +95,11 @@ class Success extends Action
      */
     public function execute()
     {
+        // Check enabled
+        if ($this->moduleHelper->enabled() === false) {
+            throw new ForbiddenAccess('Module is disabled');
+        }
+
         // Check access
         if ($this->moduleHelper->hasAccess() === false) {
             throw new ForbiddenAccess('Access denied for IP ' . $this->moduleHelper->getIpAddress());

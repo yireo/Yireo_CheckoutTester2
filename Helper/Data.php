@@ -44,10 +44,12 @@ class Data extends AbstractHelper
     {
         $ip = (string)$this->getConfigValue('ip');
         $ip = trim($ip);
+        if (!$ip) {
+            return true;
+        }
 
         $realIp = $this->getIpAddress();
-
-        if (!$ip || !$realIp) {
+        if (!$realIp) {
             return false;
         }
 
@@ -60,7 +62,7 @@ class Data extends AbstractHelper
                 continue;
             }
 
-            if ($ip == $realIp) {
+            if ($ip === $realIp) {
                 return true;
             }
         }
@@ -75,7 +77,7 @@ class Data extends AbstractHelper
      */
     public function getIpAddress(): string
     {
-        $ip = $this->_request->getClientIp();
+        $ip = (string)$this->_request->getClientIp();
         $forwarded = explode(', ', $ip);
         return ($forwarded ? $forwarded[0] : $ip);
     }
