@@ -8,5 +8,5 @@ Next, install the new module into Magento itself. The following steps assume you
 * Run `php -f bin/magento module:enable Yireo_CheckoutTester2`
 * Run `php -f bin/magento setup:upgrade`
 * Flush the Magento cache
-* Configure settings under **Stores > Configuration > Advanced > Yireo CheckoutTester**
+* Configure settings under **Stores > Configuration > Yireo > Yireo CheckoutTester**
 * Done
