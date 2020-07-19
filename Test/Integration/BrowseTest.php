@@ -12,11 +12,10 @@ declare(strict_types = 1);
 
 namespace Yireo\CheckoutTester2\Test\Integration;
 
-use Magento\TestFramework\ObjectManager;
 use Magento\TestFramework\TestCase\AbstractController as ControllerTestCase;
 use Yireo\CheckoutTester2\Exception\ForbiddenAccess;
 use Yireo\CheckoutTester2\Exception\InvalidOrderId;
-use Zend\Stdlib\Parameters;
+use Laminas\Stdlib\Parameters;
 
 /**
  * Class BrowseTest
