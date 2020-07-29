@@ -37,8 +37,9 @@ class ModuleConfigTest extends TestCase
     /**
      * Setup
      */
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->subjectModuleName = 'Yireo_CheckoutTester2';
         $this->objectManager = ObjectManager::getInstance();
     }

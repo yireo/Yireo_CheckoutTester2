@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.13] - 29 July 2020
+### Added
+- Magento 2.4 support
+
 ## [0.0.12] - August 2019
 ### Added
 - Proper integration testing for browsing depending on config settings

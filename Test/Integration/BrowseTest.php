@@ -8,7 +8,7 @@
  * @license     Open Source License (OSL v3)
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Yireo\CheckoutTester2\Test\Integration;
 
@@ -40,9 +40,9 @@ class BrowseTest extends ControllerTestCase
     public function testIfPageWorksByDefault()
     {
         $this->dispatch('/checkouttester/index/success');
-        $body = (string) $this->getResponse()->getBody();
+        $body = (string)$this->getResponse()->getBody();
         $this->assertNotEmpty($body);
-        $this->assertContains('Thank you for your purchase!', $body);
+        $this->assertTrue((bool)strpos($body, 'Thank you for your purchase!'));
     }
 
     /**
@@ -75,8 +75,8 @@ class BrowseTest extends ControllerTestCase
     {
         $this->getRequest()->setServer(new Parameters(['HTTP_CLIENT_IP' => '1.1.1.1']));
         $this->dispatch('/checkouttester/index/success');
-        $body = (string) $this->getResponse()->getBody();
+        $body = (string)$this->getResponse()->getBody();
         $this->assertNotEmpty($body);
-        $this->assertContains('Thank you for your purchase!', $body);
+        $this->assertTrue((bool)strpos($body, 'Thank you for your purchase!'));
     }
 }
