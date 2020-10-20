@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.14] - 20 October 2020
+### Fixed
+- Remove page layout specification in XML layout (which is duplicate) (@GrimLink)
+
 ## [0.0.13] - 29 July 2020
 ### Added
 - Magento 2.4 support
