@@ -13,6 +13,7 @@
     <update handle="checkout_onepage_success"/>
     <head>
         <title>CheckoutTester Success Page</title>
+        <meta name="robots" content="NOINDEX,NOFOLLOW"/>
     </head>
     <body>
         <attribute name="class" value="checkout-onepage-success"/>
