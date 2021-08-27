@@ -12,11 +12,6 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 
 use Magento\Framework\Event\ManagerInterface;
 
-/**
- * Class EventManagerMock
- *
- * @package Yireo\CheckoutTester2\Test\Unit\Mock\Generic
- */
 trait EventManagerMock
 {
     /**

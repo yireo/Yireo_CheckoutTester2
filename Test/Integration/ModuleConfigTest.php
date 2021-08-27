@@ -15,11 +15,6 @@ use Magento\Framework\Module\ModuleList;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class ModuleConfigTest
- *
- * @package Yireo\CheckoutTester2\Test\Integration
- */
 class ModuleConfigTest extends TestCase
 {
     /**

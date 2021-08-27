@@ -15,11 +15,6 @@ use Yireo\CheckoutTester2\Exception\ForbiddenAccess;
 use Yireo\CheckoutTester2\Exception\InvalidOrderId;
 use Laminas\Stdlib\Parameters;
 
-/**
- * Class BrowseTest
- *
- * @package Yireo\CheckoutTester2\Test\Integration
- */
 class BrowseTest extends ControllerTestCase
 {
     /**

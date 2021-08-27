@@ -13,11 +13,6 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock;
 use Magento\Framework\App\Helper\Context;
 use Yireo\CheckoutTester2\Test\Unit\Mock\Generic\ScopeConfigMock;
 
-/**
- * Class DataTest
- *
- * @package Yireo\CheckoutTester2\Test\Unit\Mock\HelperContextMock
- */
 trait HelperContextMock
 {
     /**

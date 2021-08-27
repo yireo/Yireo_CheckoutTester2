@@ -12,11 +12,6 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext;
 
 use Magento\Framework\View\Element\Template\File\Resolver;
 
-/**
- * Class FileResolverMock
- *
- * @package Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext
- */
 trait FileResolverMock
 {
     /**

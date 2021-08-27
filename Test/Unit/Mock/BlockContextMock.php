@@ -12,27 +12,32 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock;
 
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\View\Element\Template\Context as TemplateContext;
+use Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext\AppStateMock;
+use Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext\CacheMock;
+use Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext\CacheStateMock;
+use Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext\FileResolverMock;
+use Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext\SidResolverMock;
+use Yireo\CheckoutTester2\Test\Unit\Mock\Generic\EventManagerMock;
+use Yireo\CheckoutTester2\Test\Unit\Mock\Generic\ScopeConfigMock;
+use Yireo\CheckoutTester2\Test\Unit\Mock\Generic\SessionMock;
+use Yireo\CheckoutTester2\Test\Unit\Mock\Generic\StoreManagerMock;
+use Yireo\CheckoutTester2\Test\Unit\Mock\Generic\UrlBuilderMock;
 
-/**
- * Class DataTest
- *
- * @package Yireo\CheckoutTester2\Test\Unit\Mock\BlockContextMock
- */
 trait BlockContextMock
 {
     /**
      * Import mocking behaviour
      */
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\Generic\ScopeConfigMock;
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\Generic\EventManagerMock;
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\Generic\StoreManagerMock;
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\Generic\UrlBuilderMock;
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\Generic\SessionMock;
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext\SidResolverMock;
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext\AppStateMock;
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext\CacheStateMock;
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext\CacheMock;
-    use \Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext\FileResolverMock;
+    use ScopeConfigMock;
+    use EventManagerMock;
+    use StoreManagerMock;
+    use UrlBuilderMock;
+    use SessionMock;
+    use SidResolverMock;
+    use AppStateMock;
+    use CacheStateMock;
+    use CacheMock;
+    use FileResolverMock;
 
     /**
      * Test whether the class can be converted to HTML

@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * CheckoutTester2 plugin for Magento
  *
@@ -23,12 +22,6 @@ use Yireo\CheckoutTester2\Exception\InvalidOrderId;
 use Yireo\CheckoutTester2\Helper\Data;
 use Yireo\CheckoutTester2\Helper\Order;
 
-/**
- * CheckoutTester frontend controller
- *
- * @category    CheckoutTester2
- * @package Yireo\CheckoutTester2\Controller\Index
- */
 class Success extends Action
 {
     /**
@@ -50,7 +43,6 @@ class Success extends Action
      * @var Data
      */
     protected $moduleHelper;
-
 
     /**
      * @var Order

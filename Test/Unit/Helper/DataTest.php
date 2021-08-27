@@ -17,11 +17,6 @@ use PHPUnit_Framework_MockObject_MockObject;
 use \Yireo\CheckoutTester2\Helper\Data as Target;
 use Yireo\CheckoutTester2\Test\Unit\Mock\HelperContextMock;
 
-/**
- * Class DataTest
- *
- * @package Yireo\CheckoutTester2\Test\Unit\Helper
- */
 class DataTest extends TestCase
 {
     /**

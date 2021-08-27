@@ -13,11 +13,6 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
-/**
- * Class StoreManagerMock
- *
- * @package Yireo\CheckoutTester2\Test\Unit\Mock\Generic
- */
 trait StoreManagerMock
 {
     /**

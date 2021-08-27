@@ -2,7 +2,6 @@
 /**
  * Yireo CheckoutTester2 for Magento
  *
- * @package     Yireo_CheckoutTester2
  * @author      Yireo (https://www.yireo.com/)
  * @copyright   Copyright 2017 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
@@ -16,11 +15,6 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Url;
 
-/**
- * Class Link
- *
- * @package Yireo\CheckoutTester2\Block\Field
- */
 class Link extends Field
 {
     /**

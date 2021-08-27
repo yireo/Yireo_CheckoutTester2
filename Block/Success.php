@@ -10,13 +10,8 @@
 
 namespace Yireo\CheckoutTester2\Block;
 
-use \Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template;
 
-/**
- * Class Success
- *
- * @package Yireo\CheckoutTester2\Block
- */
 class Success extends Template
 {
 }

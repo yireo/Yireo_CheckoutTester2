@@ -13,11 +13,6 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 use Magento\Framework\Url;
 use Magento\Framework\UrlInterface;
 
-/**
- * Class UrlBuilderMock
- *
- * @package Yireo\CheckoutTester2\Test\Unit\Mock\Generic
- */
 trait UrlBuilderMock
 {
     /**

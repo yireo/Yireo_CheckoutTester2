@@ -12,11 +12,6 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 
 use Magento\Framework\Session\SessionManagerInterface;
 
-/**
- * Class SessionMock
- *
- * @package Yireo\CheckoutTester2\Test\Unit\Mock\Generic
- */
 trait SessionMock
 {
     /**

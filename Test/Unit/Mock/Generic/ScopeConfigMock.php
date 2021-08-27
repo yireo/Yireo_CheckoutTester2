@@ -12,11 +12,6 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\Generic;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
-/**
- * Class DataTest
- *
- * @package Yireo\CheckoutTester2\Test\Unit\Mock\Generic
- */
 trait ScopeConfigMock
 {
     /**

@@ -12,11 +12,6 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext;
 
 use Magento\Framework\App\CacheInterface;
 
-/**
- * Class CacheMock
- *
- * @package Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext
- */
 trait CacheMock
 {
     /**

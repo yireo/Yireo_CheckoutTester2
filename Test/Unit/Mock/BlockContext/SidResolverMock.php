@@ -12,11 +12,6 @@ namespace Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext;
 
 use Magento\Framework\Session\SidResolverInterface;
 
-/**
- * Class SidResolverMock
- *
- * @package Yireo\CheckoutTester2\Test\Unit\Mock\BlockContext
- */
 trait SidResolverMock
 {
     /**

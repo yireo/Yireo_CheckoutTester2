@@ -13,9 +13,6 @@ namespace Yireo\CheckoutTester2\Factory;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 
-/**
- * Class \Yireo\CheckoutTester2\Factory\OrderFactory
- */
 class OrderFactory
 {
     /**

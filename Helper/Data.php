@@ -14,9 +14,6 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
 
-/**
- * Class \Yireo\CheckoutTester2\Helper\Data
- */
 class Data extends AbstractHelper
 {
     /**

@@ -17,9 +17,6 @@ use Magento\Sales\Api\Data\OrderSearchResultInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Yireo\CheckoutTester2\Factory\OrderFactory;
 
-/**
- * Class \Yireo\CheckoutTester2\Helper\Order
- */
 class Order
 {
     /**
