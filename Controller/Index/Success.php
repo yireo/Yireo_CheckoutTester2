@@ -172,7 +172,10 @@ class Success extends Action
     public function dispatchEvents(OrderInterface $order)
     {
         if ($this->moduleHelper->allowDispatchCheckoutOnepageControllerSuccessAction()) {
-            $eventData = ['order_ids' => [$order->getEntityId()]];
+            $eventData = [
+                'order_ids' => [$order->getEntityId()],
+                'order' => $order
+            ];
             $this->_eventManager->dispatch('checkout_onepage_controller_success_action', $eventData);
         }
     }
