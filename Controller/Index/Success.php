@@ -124,7 +124,10 @@ class Success implements HttpGetActionInterface
             return;
         }
 
-        $eventData = ['order_ids' => [$order->getEntityId()]];
+        $eventData = [
+            'order_ids' => [$order->getEntityId()],
+            'order' => $order
+        ];
         $this->eventManager->dispatch('checkout_onepage_controller_success_action', $eventData);
     }
 }

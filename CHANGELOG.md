@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed unneeded Success-block
 - Remove `setup_version` from `module.xml`
 
+## [0.0.16] - 4 August 2022
+### Fixed
+- Missing order data in event (@JamesFX2) #23
+
 ## [0.0.15] - 27 August 2021
 ### Added
 - NOINDEX,NOFOLLOW
