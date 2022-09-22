@@ -4,76 +4,62 @@
  *
  * @package     Yireo_CheckoutTester2
  * @author      Yireo (https://www.yireo.com/)
- * @copyright   Copyright 2016 Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2022 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
 namespace Yireo\CheckoutTester2\Controller\Index;
 
-use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\Page;
 use Magento\Checkout\Model\Session;
-use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\Event\Manager as EventManager;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Sales\Api\Data\OrderInterface;
+use Yireo\CheckoutTester2\Config\Config as ModuleConfig;
 use Yireo\CheckoutTester2\Exception\ForbiddenAccess;
 use Yireo\CheckoutTester2\Exception\InvalidOrderId;
-use Yireo\CheckoutTester2\Helper\Data;
-use Yireo\CheckoutTester2\Helper\Order;
+use Yireo\CheckoutTester2\Utility\Access;
+use Yireo\CheckoutTester2\Utility\GetOrder;
 
-class Success extends Action
+class Success implements HttpGetActionInterface
 {
-    /**
-     * @var PageFactory
-     */
-    protected $resultPageFactory;
-
-    /**
-     * @var Registry
-     */
-    protected $registry;
-
-    /**
-     * @var Session
-     */
-    protected $checkoutSession;
-
-    /**
-     * @var Data
-     */
-    protected $moduleHelper;
-
-    /**
-     * @var Order
-     */
-    protected $orderHelper;
+    private PageFactory $resultPageFactory;
+    private Registry $registry;
+    private Session $checkoutSession;
+    private ModuleConfig $moduleConfig;
+    private Access $access;
+    private GetOrder $getOrder;
+    private EventManager $eventManager;
 
     /**
      * Success constructor.
      *
-     * @param Context $context
      * @param PageFactory $resultPageFactory
      * @param Registry $registry
      * @param Session $checkoutSession
-     * @param Data $moduleHelper
-     * @param Order $orderHelper
+     * @param ModuleConfig $moduleConfig
+     * @param Access $access
+     * @param GetOrder $getOrder
+     * @param EventManager $eventManager
      */
     public function __construct(
-        Context $context,
         PageFactory $resultPageFactory,
         Registry $registry,
         Session $checkoutSession,
-        Data $moduleHelper,
-        Order $orderHelper
+        ModuleConfig $moduleConfig,
+        Access $access,
+        GetOrder $getOrder,
+        EventManager $eventManager
     ) {
-        parent::__construct($context);
-
         $this->resultPageFactory = $resultPageFactory;
         $this->registry = $registry;
         $this->checkoutSession = $checkoutSession;
-        $this->moduleHelper = $moduleHelper;
-        $this->orderHelper = $orderHelper;
+        $this->moduleConfig = $moduleConfig;
+        $this->access = $access;
+        $this->getOrder = $getOrder;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -86,20 +72,16 @@ class Success extends Action
      */
     public function execute()
     {
-        // Check enabled
-        if ($this->moduleHelper->enabled() === false) {
+        if ($this->moduleConfig->enabled() === false) {
             throw new ForbiddenAccess('Module is disabled');
         }
 
-        // Check access
-        if ($this->moduleHelper->hasAccess() === false) {
-            throw new ForbiddenAccess('Access denied for IP ' . $this->moduleHelper->getIpAddress());
+        if ($this->access->hasAccess() === false) {
+            throw new ForbiddenAccess('Access denied for IP ' . $this->access->getCurrentIpAddress());
         }
 
-        // Fetch the order
-        $order = $this->getOrder();
+        $order = $this->getOrder->get();
 
-        // Fail when there is no valid order
         if (!$order->getEntityId()) {
             throw new InvalidOrderId('Invalid order ID');
         }
@@ -108,39 +90,9 @@ class Success extends Action
         $resultPage = $this->resultPageFactory->create();
         $resultPage->addHandle('checkouttester_index_index');
 
-        // Register this order
         $this->registerOrder($order);
 
         return $resultPage;
-    }
-
-    /**
-     * Method to fetch the current order
-     *
-     * @return OrderInterface
-     */
-    protected function getOrder(): OrderInterface
-    {
-        $orderIdFromUrl = (int)$this->getRequest()->getParam('order_id');
-        $order = $this->orderHelper->getOrderById($orderIdFromUrl);
-        if ($order->getEntityId()) {
-            return $order;
-        }
-
-        $orderIdFromConfig = (int)$this->moduleHelper->getOrderIdFromConfig();
-        $order = $this->orderHelper->getOrderById($orderIdFromConfig);
-        if ($order->getEntityId()) {
-            return $order;
-        }
-
-        $lastOrderId = $this->orderHelper->getLastInsertedOrderId();
-        $order = $this->orderHelper->getOrderById($lastOrderId);
-
-        if ($order->getEntityId()) {
-            return $order;
-        }
-
-        return $this->orderHelper->getEmptyOrder();
     }
 
     /**
@@ -150,17 +102,14 @@ class Success extends Action
      */
     protected function registerOrder(OrderInterface $order)
     {
-        // Register this order as the current order
         $currentOrder = $this->registry->registry('current_order');
         if (empty($currentOrder)) {
             $this->registry->register('current_order', $order);
         }
 
-        // Load the session with this order
         $this->checkoutSession->setLastOrderId($order->getEntityId())
             ->setLastRealOrderId($order->getIncrementId());
 
-        // Optionally dispatch an event
         $this->dispatchEvents($order);
     }
 
@@ -171,9 +120,11 @@ class Success extends Action
      */
     public function dispatchEvents(OrderInterface $order)
     {
-        if ($this->moduleHelper->allowDispatchCheckoutOnepageControllerSuccessAction()) {
-            $eventData = ['order_ids' => [$order->getEntityId()]];
-            $this->_eventManager->dispatch('checkout_onepage_controller_success_action', $eventData);
+        if (!$this->moduleConfig->allowDispatchCheckoutOnepageControllerSuccessAction()) {
+            return;
         }
+
+        $eventData = ['order_ids' => [$order->getEntityId()]];
+        $this->eventManager->dispatch('checkout_onepage_controller_success_action', $eventData);
     }
 }

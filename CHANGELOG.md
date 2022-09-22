@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 22 September 2021
+### Added
+- Separate `Config` class
+- Added PHP 7.4+ syntax
+- Rewrite controller to use `HttpGetActionInterface` only
+- More helpful comments with configuration options
+
+### Removed
+- Remove legacy data-helper
+- Removed support for PHP 7.4
+- Removed support for Magento 2.2 or older
+- Removed unneeded Success-block
+- Remove `setup_version` from `module.xml`
+
 ## [0.0.15] - 27 August 2021
 ### Added
 - NOINDEX,NOFOLLOW

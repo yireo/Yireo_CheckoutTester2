@@ -5,7 +5,7 @@
  *
  * @package     Yireo_CheckoutTester2
  * @author      Yireo
- * @copyright   Copyright 2017 Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2022 Yireo (https://www.yireo.com/)
  * @license     Open Source License
  */
 -->
@@ -26,19 +26,31 @@
                 </field>
                 <field id="order_id" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Sales Order ID</label>
-                    <comment><![CDATA[Numerical ID of sales-order entity]]></comment>
+                    <depends>
+                        <field id="checkouttester2/settings/enabled">1</field>
+                    </depends>
+                    <comment><![CDATA[Numerical ID of sales-order entity. If zero, latest order is picked.]]></comment>
                 </field>
                 <field id="ip" translate="label" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Development IP</label>
-                    <comment><![CDATA[CSV-list of IP-addresses allowed access]]></comment>
+                    <depends>
+                        <field id="checkouttester2/settings/enabled">1</field>
+                    </depends>
+                    <comment><![CDATA[CSV-list of IP-addresses allowed access. If empty, all IPs are allowed.]]></comment>
                 </field>
                 <field id="checkout_onepage_controller_success_action" type="select" translate="label" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Generate event</label>
-                    <comment><![CDATA[Event "checkout_onepage_controller_success_action"]]></comment>
+                    <depends>
+                        <field id="checkouttester2/settings/enabled">1</field>
+                    </depends>
+                    <comment><![CDATA[Event "checkout_onepage_controller_success_action" is triggered.]]></comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="usage" type="select" translate="label" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Usage</label>
+                    <depends>
+                        <field id="checkouttester2/settings/enabled">1</field>
+                    </depends>
                     <frontend_model>Yireo\CheckoutTester2\Block\Field\Link</frontend_model>
                 </field>
             </group>
