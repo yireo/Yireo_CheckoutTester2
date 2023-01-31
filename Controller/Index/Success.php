@@ -15,7 +15,6 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\ActionInterface;
-use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Event\Manager as EventManager;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
