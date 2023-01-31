@@ -6,9 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.0.17] - 31 January 2023
-### Fixed
-- Fatal error in controller with parent call while using interface
+## [1.0.0] - 22 September 2021
+### Added
+- Separate `Config` class
+- Added PHP 7.4+ syntax
+- Rewrite controller to use `HttpGetActionInterface` only
+- More helpful comments with configuration options
+
+### Removed
+- Remove legacy data-helper
+- Removed support for PHP 7.4
+- Removed support for Magento 2.2 or older
+- Removed unneeded Success-block
+- Remove `setup_version` from `module.xml`
+>>>>>>> a59b832e0d85d2fbf8bfa6c91064a28dfbc59344
 
 ## [0.0.16] - 4 August 2022
 ### Fixed

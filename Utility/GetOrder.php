@@ -1,62 +1,75 @@
 <?php declare(strict_types=1);
-/**
- * CheckoutTester2 plugin for Magento
- *
- * @package     Yireo_EmailTester2
- * @author      Yireo (https://www.yireo.com/)
- * @copyright   Copyright 2017 Yireo (https://www.yireo.com/)
- * @license     Open Source License (OSL v3)
- */
 
-namespace Yireo\CheckoutTester2\Helper;
+namespace Yireo\CheckoutTester2\Utility;
 
 use Magento\Eav\Model\Entity\Collection\AbstractCollection;
 use Magento\Framework\Api\Search\SearchCriteriaBuilder;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderSearchResultInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use Yireo\CheckoutTester2\Factory\OrderFactory;
+use Yireo\CheckoutTester2\Config\Config;
+use Magento\Sales\Api\Data\OrderInterfaceFactory as OrderFactory;
 
-class Order
+class GetOrder
 {
-    /**
-     * @var OrderFactory
-     */
-    protected $orderFactory;
+    private RequestInterface $request;
+    private Config $config;
+    private OrderFactory $orderFactory;
+    private OrderRepositoryInterface $orderRepository;
+    private SearchCriteriaBuilder $searchCriteriaBuilder;
 
-    /**
-     * @var OrderRepositoryInterface
-     */
-    protected $orderRepository;
-
-    /**
-     * @var SearchCriteriaBuilder
-     */
-    protected $searchCriteriaBuilder;
-
-    /**
-     * Data constructor.
-     *
-     * @param OrderFactory $orderFactory
-     * @param OrderRepositoryInterface $orderRepository
-     * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     */
     public function __construct(
+        RequestInterface $request,
+        Config $config,
         OrderFactory $orderFactory,
         OrderRepositoryInterface $orderRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
+        $this->request = $request;
+        $this->config = $config;
         $this->orderFactory = $orderFactory;
         $this->orderRepository = $orderRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
     /**
+     * Method to fetch the current order
+     *
+     * @return OrderInterface
+     */
+    public function get(): OrderInterface
+    {
+        $orderIdFromUrl = (int)$this->request->getParam('order_id');
+        $order = $this->getOrderById($orderIdFromUrl);
+        if ($order->getEntityId()) {
+            return $order;
+        }
+
+        $orderIdFromConfig = $this->config->getOrderIdFromConfig();
+        $order = $this->getOrderById($orderIdFromConfig);
+        if ($order->getEntityId()) {
+            return $order;
+        }
+
+        $lastOrderId = $this->getLastInsertedOrderId();
+        $order = $this->getOrderById($lastOrderId);
+
+        if ($order->getEntityId()) {
+            return $order;
+        }
+
+        return $this->getEmptyOrder();
+    }
+
+
+    /**
      * Return the last order ID in this database
      *
      * @return int
      */
-    public function getLastInsertedOrderId()
+    private function getLastInsertedOrderId()
     {
         $orders = $this->getOrderCollection();
 
@@ -80,7 +93,7 @@ class Order
     /**
      * @return OrderInterface
      */
-    public function getEmptyOrder()
+    private function getEmptyOrder()
     {
         return $this->orderFactory->create();
     }
@@ -90,7 +103,7 @@ class Order
      *
      * @return OrderInterface
      */
-    public function getOrderById($orderId)
+    private function getOrderById($orderId)
     {
         if (empty($orderId)) {
             return $this->getEmptyOrder();
@@ -98,7 +111,7 @@ class Order
 
         try {
             return $this->orderRepository->get($orderId);
-        } catch (\Magento\Framework\Exception\NoSuchEntityException $exception) {
+        } catch (NoSuchEntityException $exception) {
             return $this->getEmptyOrder();
         }
     }
@@ -106,7 +119,7 @@ class Order
     /**
      * @return OrderSearchResultInterface
      */
-    protected function getOrderCollection()
+    private function getOrderCollection()
     {
         $searchCriteriaBuilder = $this->searchCriteriaBuilder;
         $searchCriteriaBuilder->addSortOrder('created_at', AbstractCollection::SORT_ORDER_DESC);
