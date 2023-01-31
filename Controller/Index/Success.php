@@ -14,6 +14,8 @@ use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\Page;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\ActionInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Sales\Api\Data\OrderInterface;
@@ -22,7 +24,7 @@ use Yireo\CheckoutTester2\Exception\InvalidOrderId;
 use Yireo\CheckoutTester2\Helper\Data;
 use Yireo\CheckoutTester2\Helper\Order;
 
-class Success extends Action
+class Success implements HttpGetActionInterface
 {
     /**
      * @var PageFactory
@@ -67,8 +69,6 @@ class Success extends Action
         Data $moduleHelper,
         Order $orderHelper
     ) {
-        parent::__construct($context);
-
         $this->resultPageFactory = $resultPageFactory;
         $this->registry = $registry;
         $this->checkoutSession = $checkoutSession;
