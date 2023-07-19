@@ -3,16 +3,20 @@
 namespace Yireo\CheckoutTester2\Config;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\State;
 use Magento\Store\Model\ScopeInterface;
 
 class Config
 {
     private ScopeConfigInterface $scopeConfig;
+    private State $appState;
 
     public function __construct(
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        State $appState
     ) {
         $this->scopeConfig = $scopeConfig;
+        $this->appState = $appState;
     }
 
     /**
@@ -22,6 +26,11 @@ class Config
      */
     public function enabled(): bool
     {
+        $onlyInDevMode = (bool)$this->getConfigValue('only_in_dev_mode');
+        if ($onlyInDevMode && $this->appState->getMode() !== State::MODE_DEVELOPER) {
+            return false;
+        }
+
         return (bool)$this->getConfigValue('enabled');
     }
 

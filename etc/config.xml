@@ -14,6 +14,7 @@
         <checkouttester2>
             <settings>
                 <enabled>1</enabled>
+                <only_in_dev_mode>1</only_in_dev_mode>
                 <order_id>0</order_id>
                 <ip/>
                 <checkout_onepage_controller_success_action>0</checkout_onepage_controller_success_action>
