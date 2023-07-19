@@ -23,7 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed support for Magento 2.2 or older
 - Removed unneeded Success-block
 - Remove `setup_version` from `module.xml`
->>>>>>> a59b832e0d85d2fbf8bfa6c91064a28dfbc59344
 
 ## [0.0.16] - 4 August 2022
 ### Fixed
