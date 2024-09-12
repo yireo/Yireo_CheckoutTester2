@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.3] - 12 September 2023
+### Fixed
+- Unit test fixes
+
 ## [1.0.2] - 12 September 2023
 ### Fixed
 - PHPStan fixes
