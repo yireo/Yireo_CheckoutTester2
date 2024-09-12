@@ -1,7 +1,7 @@
 {
   "name": "yireo/magento2-checkouttester2",
   "license": "OSL-3.0",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "magento2-module",
   "homepage": "https://github.com/yireo/Yireo_CheckoutTester2",
   "description": "Checkout Tester for Magento 2",
