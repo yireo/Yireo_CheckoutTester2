@@ -63,7 +63,6 @@ class GetOrder
         return $this->getEmptyOrder();
     }
 
-
     /**
      * Return the last order ID in this database
      *
