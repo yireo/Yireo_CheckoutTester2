@@ -8,16 +8,16 @@
  * @license     Open Source License (OSL v3)
  */
 
-namespace Yireo\CheckoutTester2\Test\Unit\Helper;
+namespace Yireo\CheckoutTester2\Test\Unit\Config;
 
 use Magento\Framework\App\Request\Http;
+use Magento\Framework\App\State;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
-use \Yireo\CheckoutTester2\Helper\Data as Target;
+use \Yireo\CheckoutTester2\Config\Config as Target;
 use Yireo\CheckoutTester2\Test\Unit\Mock\HelperContextMock;
 
-class DataTest extends TestCase
+class ConfigTest extends TestCase
 {
     /**
      * Import mocking behaviour
@@ -36,16 +36,6 @@ class DataTest extends TestCase
         $this->setScopeConfigValue('checkouttester2/settings/enabled', 0);
         $target = $this->getTargetObject();
         $this->assertSame(false, $target->enabled());
-    }
-
-    /**
-     * Test whether the URL returns some value
-     */
-    public function testHasAccess()
-    {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '127.0.0.1');
-        $target = $this->getTargetObject();
-        $this->assertSame(true, $target->hasAccess());
     }
 
     /**
@@ -78,14 +68,9 @@ class DataTest extends TestCase
      */
     protected function getTargetObject()
     {
-        $context = $this->getContextMock();
-
-        $request = $this->getRequestMock();
-        $context->expects($this->any())
-            ->method('getRequest')
-            ->will($this->returnValue($request));
-
-        $target = new Target($context);
+        $scopeConfig = $this->getScopeConfigMock();
+        $appState = $this->createMock(State::class);
+        $target = new Target($scopeConfig, $appState);
 
         return $target;
     }
@@ -95,14 +80,7 @@ class DataTest extends TestCase
      */
     protected function getRequestMock()
     {
-        $request = $this->createMock(
-            Http::class,
-            [],
-            [],
-            '',
-            false,
-            false
-        );
+        $request = $this->createMock(Http::class);
 
         $request->expects($this->any())
             ->method('getClientIp')

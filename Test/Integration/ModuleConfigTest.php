@@ -10,6 +10,9 @@
 
 namespace Yireo\CheckoutTester2\Test\Integration;
 
+use Magento\Framework\App\DeploymentConfig;
+use Magento\Framework\App\DeploymentConfig\Reader;
+use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Component\ComponentRegistrar;
 use Magento\Framework\Module\ModuleList;
 use Magento\TestFramework\ObjectManager;
@@ -60,17 +63,17 @@ class ModuleConfigTest extends TestCase
 
         // The tests by default point to the wrong config directory for this test.
         $directoryList = $this->objectManager->create(
-            \Magento\Framework\App\Filesystem\DirectoryList::class,
-            ['root' => BP]
+            DirectoryList::class,
+            ['root' => '/']
         );
 
         $deploymentConfigReader = $this->objectManager->create(
-            \Magento\Framework\App\DeploymentConfig\Reader::class,
+            Reader::class,
             ['dirList' => $directoryList]
         );
 
         $deploymentConfig = $this->objectManager->create(
-            \Magento\Framework\App\DeploymentConfig::class,
+            DeploymentConfig::class,
             ['reader' => $deploymentConfigReader]
         );
 

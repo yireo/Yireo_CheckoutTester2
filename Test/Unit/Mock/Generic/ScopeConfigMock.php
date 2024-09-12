@@ -22,7 +22,7 @@ trait ScopeConfigMock
     /**
      * @return ScopeConfigInterface
      */
-    protected function getScopeConfigMock()
+    protected function getScopeConfigMock(): ScopeConfigInterface
     {
         $scopeConfig = $this->createMock(ScopeConfigInterface::class);
 
@@ -36,15 +36,17 @@ trait ScopeConfigMock
     /**
      * @return array
      */
-    protected function getScopeConfigValues()
+    protected function getScopeConfigValues(): array
     {
         return array_values($this->scopeConfigValues);
     }
 
     /**
-     * @return array
+     * @param string $name
+     * @param $value
+     * @return void
      */
-    protected function setScopeConfigValue($name, $value)
+    protected function setScopeConfigValue(string $name, $value): void
     {
         $scope = 'store';
         $this->scopeConfigValues[$name] = [$name, $scope, null, $value];

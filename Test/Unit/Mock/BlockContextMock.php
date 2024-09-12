@@ -72,14 +72,7 @@ trait BlockContextMock
             $contextClass = Context::class;
         }
 
-        $context = $this->createMock(
-            $contextClass,
-            [],
-            [],
-            '',
-            false,
-            false
-        );
+        $context = $this->createMock($contextClass);
 
         $scopeConfig = $this->getScopeConfigMock();
         $context->expects($this->any())

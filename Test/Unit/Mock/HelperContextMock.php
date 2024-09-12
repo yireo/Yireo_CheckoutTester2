@@ -25,15 +25,7 @@ trait HelperContextMock
      */
     protected function getContextMock()
     {
-        $context = $this->createMock(
-            Context::class,
-            [],
-            [],
-            '',
-            false,
-            false
-        );
-
+        $context = $this->createMock(Context::class);
         $scopeConfig = $this->getScopeConfigMock();
         $context->expects($this->any())
             ->method('getScopeConfig')
