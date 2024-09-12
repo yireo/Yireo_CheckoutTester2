@@ -71,19 +71,18 @@ class GetOrder
      */
     private function getLastInsertedOrderId()
     {
-        $orders = $this->getOrderCollection();
-
-        if (empty($orders)) {
+        $orders = $this->getOrderSearchResult();
+        if (false === $orders->getTotalCount() > 0) {
             return 0;
         }
 
         $orderItems = $orders->getItems();
-        if (empty($orderItems)) {
+        if (count($orderItems) < 1) {
             return 0;
         }
 
         $firstOrder = array_shift($orderItems);
-        if (empty($firstOrder)) {
+        if (false === $firstOrder instanceof OrderInterface) {
             return 0;
         }
 
@@ -119,7 +118,7 @@ class GetOrder
     /**
      * @return OrderSearchResultInterface
      */
-    private function getOrderCollection()
+    private function getOrderSearchResult(): OrderSearchResultInterface
     {
         $searchCriteriaBuilder = $this->searchCriteriaBuilder;
         $searchCriteriaBuilder->addSortOrder('created_at', AbstractCollection::SORT_ORDER_DESC);
@@ -129,8 +128,6 @@ class GetOrder
         $searchCriteria->setCurrentPage(0);
         $searchCriteria->getSortOrders();
 
-        $orders = $this->orderRepository->getList($searchCriteria);
-
-        return $orders;
+        return $this->orderRepository->getList($searchCriteria);
     }
 }

@@ -3,6 +3,7 @@
 namespace Yireo\CheckoutTester2\Utility;
 
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\HTTP\PhpEnvironment\Request;
 use Yireo\CheckoutTester2\Config\Config;
 
 class Access
@@ -59,7 +60,9 @@ class Access
      */
     public function getCurrentIpAddress(): string
     {
-        $ip = (string)$this->request->getClientIp();
+        /** @var Request $request */
+        $request = $this->request;
+        $ip = (string)$request->getClientIp();
         $forwarded = explode(', ', $ip);
         return ($forwarded ? $forwarded[0] : $ip);
     }
