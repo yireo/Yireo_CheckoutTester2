@@ -1,40 +1,58 @@
 {
-  "name": "yireo/magento2-checkouttester2",
-  "license": "OSL-3.0",
-  "version": "1.0.3",
-  "type": "magento2-module",
-  "homepage": "https://github.com/yireo/Yireo_CheckoutTester2",
-  "description": "Checkout Tester for Magento 2",
-  "keywords": [
-    "composer-installer",
-    "magento"
-  ],
-  "authors": [
-    {
-      "name": "Jisse Reitsma (Yireo)",
-      "email": "jisse@yireo.com"
-    }
-  ],
-  "require": {
-    "magento/framework": "^102.0|^103.0",
-    "magento/module-backend": "^100.1|^101.0|^102.0",
-    "magento/module-checkout": "^100.1",
-    "magento/module-config": "^100.1|^101.0",
-    "magento/module-eav": "^100.1|^101.0|^102.0",
-    "magento/module-sales": "^100.1|^101.0|^102.0|^103.0",
-    "magento/module-store": "^100.1|^101.0",
-    "php": ">=7.4.0"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "*",
-    "composer/composer": "*"
-  },
-  "autoload": {
-    "psr-4": {
-      "Yireo\\CheckoutTester2\\": ""
+    "name": "yireo/magento2-checkouttester2",
+    "license": "OSL-3.0",
+    "version": "1.0.4",
+    "type": "magento2-module",
+    "homepage": "https://github.com/yireo/Yireo_CheckoutTester2",
+    "description": "Checkout Tester for Magento 2",
+    "keywords": [
+        "composer-installer",
+        "magento"
+    ],
+    "authors": [
+        {
+            "name": "Jisse Reitsma (Yireo)",
+            "email": "jisse@yireo.com"
+        }
+    ],
+    "require": {
+        "magento/framework": "^102.0|^103.0",
+        "magento/module-backend": "^100.1|^101.0|^102.0",
+        "magento/module-checkout": "^100.1",
+        "magento/module-config": "^100.1|^101.0",
+        "magento/module-eav": "^100.1|^101.0|^102.0",
+        "magento/module-sales": "^100.1|^101.0|^102.0|^103.0",
+        "magento/module-store": "^100.1|^101.0",
+        "php": ">=7.4.0"
     },
-    "files": [
-      "registration.php"
+    "require-dev": {
+        "phpunit/phpunit": "*",
+        "composer/composer": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yireo\\CheckoutTester2\\": ""
+        },
+        "files": [
+            "registration.php"
+        ]
+    },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/jissereitsma"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yireo"
+        },
+        {
+            "type": "paypal",
+            "url": "https://www.paypal.me/yireo"
+        },
+        {
+            "type": "other",
+            "url": "https://www.buymeacoffee.com/jissereitsma"
+        }
     ]
-  }
 }
