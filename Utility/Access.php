@@ -27,7 +27,7 @@ class Access
     public function hasAccess(): bool
     {
         $ip = trim($this->config->getIpAddress());
-        if (!$ip) {
+        if (false === strlen($ip) > 0) {
             return true;
         }
 
@@ -45,9 +45,11 @@ class Access
                 continue;
             }
 
-            if ($ip === $realIp) {
-                return true;
+            if ($ip !== $realIp) {
+                continue;
             }
+
+            return true;
         }
 
         return false;
@@ -64,6 +66,7 @@ class Access
         $request = $this->request;
         $ip = (string)$request->getClientIp();
         $forwarded = explode(', ', $ip);
+
         return ($forwarded ? $forwarded[0] : $ip);
     }
 }
