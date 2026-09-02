@@ -23,7 +23,7 @@
         "magento/module-eav": "^100.1|^101.0|^102.0",
         "magento/module-sales": "^100.1|^101.0|^102.0|^103.0",
         "magento/module-store": "^100.1|^101.0",
-        "php": ">=7.4.0"
+        "php": ">=8.2 <8.6"
     },
     "require-dev": {
         "phpunit/phpunit": "*",
