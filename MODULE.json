@@ -1,0 +1,12 @@
+{
+    "module_name": "Yireo_CheckoutTester2",
+    "composer_name": "yireo/magento2-checkouttester2",
+    "sequence": [
+        "Magento_Backend",
+        "Magento_Checkout",
+        "Magento_Config",
+        "Magento_Eav",
+        "Magento_Sales",
+        "Magento_Store"
+    ]
+}
