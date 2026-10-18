@@ -2,7 +2,7 @@
 /**
  * CheckoutTester2 plugin for Magento
  *
- * @package     Yireo_EmailTester2
+ * @package     Yireo_CheckoutTester2
  * @author      Yireo (https://www.yireo.com/)
  * @copyright   Copyright 2022 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
@@ -10,79 +10,22 @@
 
 namespace Yireo\CheckoutTester2\Test\Integration;
 
-use Magento\Framework\App\DeploymentConfig;
-use Magento\Framework\App\DeploymentConfig\Reader;
-use Magento\Framework\App\Filesystem\DirectoryList;
-use Magento\Framework\Component\ComponentRegistrar;
-use Magento\Framework\Module\ModuleList;
-use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
+use Yireo\IntegrationTestHelper\Test\Integration\Traits\AssertModuleIsEnabled;
+use Yireo\IntegrationTestHelper\Test\Integration\Traits\AssertModuleIsRegistered;
 
 class ModuleConfigTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    private $subjectModuleName;
+    use AssertModuleIsEnabled;
+    use AssertModuleIsRegistered;
 
-    /**
-     * @var $objectManager ObjectManager
-     */
-    private $objectManager;
-
-    /**
-     * Setup
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->subjectModuleName = 'Yireo_CheckoutTester2';
-        $this->objectManager = ObjectManager::getInstance();
-    }
-
-    /**
-     * Test if the module is registered
-     */
     public function testModuleIsRegistered()
     {
-        $registrar = new ComponentRegistrar();
-        $this->assertArrayHasKey($this->subjectModuleName, $registrar->getPaths(ComponentRegistrar::MODULE));
+        $this->assertModuleIsRegistered('Yireo_CheckoutTester2');
     }
 
-    public function testModuleIsListed()
+    public function testModuleIsEnabled()
     {
-        /** @var $moduleList ModuleList */
-        $moduleList = $this->objectManager->create(ModuleList::class);
-        $this->assertTrue($moduleList->has($this->subjectModuleName));
-    }
-
-    public function testTheModuleIsConfiguredInTheRealEnvironment()
-    {
-        /** @var $objectManager ObjectManager */
-        $this->objectManager = ObjectManager::getInstance();
-
-        // The tests by default point to the wrong config directory for this test.
-        $directoryList = $this->objectManager->create(
-            DirectoryList::class,
-            ['root' => '/']
-        );
-
-        $deploymentConfigReader = $this->objectManager->create(
-            Reader::class,
-            ['dirList' => $directoryList]
-        );
-
-        $deploymentConfig = $this->objectManager->create(
-            DeploymentConfig::class,
-            ['reader' => $deploymentConfigReader]
-        );
-
-        /** @var $moduleList ModuleList */
-        $moduleList = $this->objectManager->create(
-            ModuleList::class,
-            ['config' => $deploymentConfig]
-        );
-
-        $this->assertTrue($moduleList->has($this->subjectModuleName));
+        $this->assertModuleIsEnabled('Yireo_CheckoutTester2');
     }
 }
