@@ -1,0 +1,5 @@
+{
+  "paths": {
+    "@yireo-checkouttester2/*": ["lib/*"]
+  }
+}
