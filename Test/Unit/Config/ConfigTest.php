@@ -63,13 +63,76 @@ class ConfigTest extends TestCase
         $this->assertSame(false, $target->allowDispatchCheckoutOnepageControllerSuccessAction());
     }
 
+    public function testEnabledOnlyInDeveloperMode()
+    {
+        $this->setScopeConfigValue('checkouttester2/settings/enabled', 1);
+        $this->setScopeConfigValue('checkouttester2/settings/only_in_dev_mode', 1);
+
+        $target = $this->getTargetObject(State::MODE_DEVELOPER);
+        $this->assertSame(true, $target->enabled());
+
+        $target = $this->getTargetObject(State::MODE_PRODUCTION);
+        $this->assertSame(false, $target->enabled());
+
+        $target = $this->getTargetObject(State::MODE_DEFAULT);
+        $this->assertSame(false, $target->enabled());
+    }
+
+    public function testEnabledInProductionModeWhenNotRestrictedToDeveloperMode()
+    {
+        $this->setScopeConfigValue('checkouttester2/settings/enabled', 1);
+        $this->setScopeConfigValue('checkouttester2/settings/only_in_dev_mode', 0);
+
+        $target = $this->getTargetObject(State::MODE_PRODUCTION);
+        $this->assertSame(true, $target->enabled());
+    }
+
+    public function testDisabledInDeveloperMode()
+    {
+        $this->setScopeConfigValue('checkouttester2/settings/enabled', 0);
+        $this->setScopeConfigValue('checkouttester2/settings/only_in_dev_mode', 1);
+
+        $target = $this->getTargetObject(State::MODE_DEVELOPER);
+        $this->assertSame(false, $target->enabled());
+    }
+
+    public function testGetIpAddress()
+    {
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '127.0.0.1,10.0.0.1');
+        $target = $this->getTargetObject();
+        $this->assertSame('127.0.0.1,10.0.0.1', $target->getIpAddress());
+    }
+
+    public function testGetIpAddressWhenEmpty()
+    {
+        $target = $this->getTargetObject();
+        $this->assertSame('', $target->getIpAddress());
+    }
+
+    public function testGetConfigValueReturnsDefaultValueForEmptyValue()
+    {
+        $this->setScopeConfigValue('checkouttester2/settings/foobar', '');
+        $target = $this->getTargetObject();
+        $this->assertSame('default', $target->getConfigValue('foobar', 'default'));
+        $this->assertNull($target->getConfigValue('foobar'));
+    }
+
+    public function testGetConfigValueWithoutPrefix()
+    {
+        $this->setScopeConfigValue('general/locale/code', 'nl_NL');
+        $target = $this->getTargetObject();
+        $this->assertSame('nl_NL', $target->getConfigValue('general/locale/code', null, false));
+        $this->assertNull($target->getConfigValue('general/locale/code'));
+    }
+
     /**
      * @return Target
      */
-    protected function getTargetObject()
+    protected function getTargetObject(string $mode = State::MODE_DEFAULT)
     {
         $scopeConfig = $this->getScopeConfigMock();
         $appState = $this->createMock(State::class);
+        $appState->method('getMode')->willReturn($mode);
         $target = new Target($scopeConfig, $appState);
 
         return $target;
