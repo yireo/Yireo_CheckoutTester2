@@ -26,7 +26,7 @@ class Access
      */
     public function hasAccess(): bool
     {
-        $ip = trim($this->config->getIpAddress());
+        $ip = trim($this->config->getIpAddress(), " \f\n\r\t\v\x00");
         if (false === strlen($ip) > 0) {
             return true;
         }
@@ -39,7 +39,7 @@ class Access
         $ips = explode(',', $ip);
 
         foreach ($ips as $ip) {
-            $ip = trim($ip);
+            $ip = trim($ip, " \f\n\r\t\v\x00");
 
             if (empty($ip)) {
                 continue;
