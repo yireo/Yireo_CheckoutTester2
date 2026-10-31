@@ -26,8 +26,7 @@
         "php": ">=8.2 <8.6"
     },
     "require-dev": {
-        "phpunit/phpunit": "*",
-        "composer/composer": "*",
+        "phpunit/phpunit": "^9.5 || ^10.5",
         "yireo/magento2-integration-test-helper": "~0.0"
     },
     "autoload": {
