@@ -8,5 +8,7 @@
         "Magento_Eav",
         "Magento_Sales",
         "Magento_Store"
-    ]
+    ],
+    "phpcs_severity": "7",
+    "phpstan_level": "1"
 }
