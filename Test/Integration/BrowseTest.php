@@ -10,6 +10,10 @@
 
 namespace Yireo\CheckoutTester2\Test\Integration;
 
+use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\Registry;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Model\Order;
 use Magento\TestFramework\TestCase\AbstractController as ControllerTestCase;
 use Yireo\CheckoutTester2\Exception\ForbiddenAccess;
 use Yireo\CheckoutTester2\Exception\InvalidOrderId;
@@ -71,5 +75,73 @@ class BrowseTest extends ControllerTestCase
         $body = (string)$this->getResponse()->getBody();
         $this->assertNotEmpty($body);
         $this->assertTrue((bool)strpos($body, 'Thank you for your purchase!'));
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     * @magentoConfigFixture current_store checkouttester2/settings/enabled 1
+     */
+    public function testIfPageShowsOrderFromUrl()
+    {
+        $order = $this->getFixtureOrder();
+        $this->dispatch('/checkouttester/index/success/order_id/' . $order->getEntityId());
+
+        $body = (string)$this->getResponse()->getBody();
+        $this->assertStringContainsString('Thank you for your purchase!', $body);
+        $this->assertStringContainsString((string)$order->getIncrementId(), $body);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     * @magentoConfigFixture current_store checkouttester2/settings/enabled 1
+     */
+    public function testIfPageFallsBackToLatestOrderWithUnknownOrderId()
+    {
+        $this->dispatch('/checkouttester/index/success/order_id/999999999');
+
+        $body = (string)$this->getResponse()->getBody();
+        $this->assertStringContainsString('Thank you for your purchase!', $body);
+        $this->assertStringContainsString((string)$this->getFixtureOrder()->getIncrementId(), $body);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     * @magentoConfigFixture current_store checkouttester2/settings/enabled 1
+     */
+    public function testIfOrderIsRegisteredInSession()
+    {
+        $order = $this->getFixtureOrder();
+        $this->dispatch('/checkouttester/index/success');
+
+        $currentOrder = $this->_objectManager->get(Registry::class)->registry('current_order');
+        $this->assertInstanceOf(OrderInterface::class, $currentOrder);
+        $this->assertSame((int)$order->getEntityId(), (int)$currentOrder->getEntityId());
+
+        $checkoutSession = $this->_objectManager->get(CheckoutSession::class);
+        $this->assertSame((int)$order->getEntityId(), (int)$checkoutSession->getLastOrderId());
+        $this->assertSame((string)$order->getIncrementId(), (string)$checkoutSession->getLastRealOrderId());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     * @magentoConfigFixture current_store checkouttester2/settings/enabled 1
+     */
+    public function testIfPageHasTitleAndRobotsMeta()
+    {
+        $this->dispatch('/checkouttester/index/success');
+
+        $body = (string)$this->getResponse()->getBody();
+        $this->assertStringContainsString('<title>CheckoutTester Success Page</title>', $body);
+        $this->assertMatchesRegularExpression('/<meta name="robots" content="NOINDEX,NOFOLLOW"/', $body);
+        $this->assertMatchesRegularExpression('/<body[^>]+class="[^"]*checkout-onepage-success/', $body);
+    }
+
+    private function getFixtureOrder(): OrderInterface
+    {
+        $order = $this->_objectManager->create(Order::class);
+        $order->loadByIncrementId('100000001');
+        $this->assertNotEmpty($order->getEntityId());
+
+        return $order;
     }
 }
