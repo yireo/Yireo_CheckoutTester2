@@ -3,8 +3,10 @@
 namespace Yireo\CheckoutTester2\Test\Unit\Controller\Index;
 
 use Magento\Checkout\Model\Session;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Manager as EventManager;
 use Magento\Framework\Registry;
+use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Sales\Api\Data\OrderInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -23,6 +25,7 @@ class SuccessTest extends TestCase
     private GetOrder&MockObject $getOrder;
     private EventManager&MockObject $eventManager;
     private PageFactory&MockObject $pageFactory;
+    private RequestInterface&MockObject $request;
 
     protected function setUp(): void
     {
@@ -31,6 +34,7 @@ class SuccessTest extends TestCase
         $this->getOrder = $this->createMock(GetOrder::class);
         $this->eventManager = $this->createMock(EventManager::class);
         $this->pageFactory = $this->createMock(PageFactory::class);
+        $this->request = $this->createMock(RequestInterface::class);
     }
 
     public function testExecuteFailsWhenDisabled()
@@ -67,6 +71,18 @@ class SuccessTest extends TestCase
         $this->getTargetObject()->execute();
     }
 
+    public function testExecuteReplacesOrderIdParamWithResolvedOrder()
+    {
+        $page = $this->createMock(Page::class);
+        $this->config->method('enabled')->willReturn(true);
+        $this->access->method('hasAccess')->willReturn(true);
+        $this->getOrder->method('get')->willReturn($this->getOrderMock(42));
+        $this->pageFactory->method('create')->willReturn($page);
+        $this->request->expects($this->once())->method('setParams')->with(['order_id' => 42]);
+
+        $this->assertSame($page, $this->getTargetObject()->execute());
+    }
+
     public function testDispatchEventsWhenAllowed()
     {
         $order = $this->getOrderMock(42);
@@ -96,14 +112,18 @@ class SuccessTest extends TestCase
 
     private function getTargetObject(): Target
     {
+        $session = $this->createMock(Session::class);
+        $session->method('__call')->willReturnSelf();
+
         return new Target(
             $this->pageFactory,
             $this->createMock(Registry::class),
-            $this->createMock(Session::class),
+            $session,
             $this->config,
             $this->access,
             $this->getOrder,
-            $this->eventManager
+            $this->eventManager,
+            $this->request
         );
     }
 }

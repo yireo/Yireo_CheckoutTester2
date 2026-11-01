@@ -15,6 +15,7 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\ActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Manager as EventManager;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
@@ -34,6 +35,7 @@ class Success implements HttpGetActionInterface
     private Access $access;
     private GetOrder $getOrder;
     private EventManager $eventManager;
+    private RequestInterface $request;
 
     /**
      * Success constructor.
@@ -45,6 +47,7 @@ class Success implements HttpGetActionInterface
      * @param Access $access
      * @param GetOrder $getOrder
      * @param EventManager $eventManager
+     * @param RequestInterface $request
      */
     public function __construct(
         PageFactory $resultPageFactory,
@@ -53,7 +56,8 @@ class Success implements HttpGetActionInterface
         ModuleConfig $moduleConfig,
         Access $access,
         GetOrder $getOrder,
-        EventManager $eventManager
+        EventManager $eventManager,
+        RequestInterface $request
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->registry = $registry;
@@ -62,6 +66,7 @@ class Success implements HttpGetActionInterface
         $this->access = $access;
         $this->getOrder = $getOrder;
         $this->eventManager = $eventManager;
+        $this->request = $request;
     }
 
     /**
@@ -87,6 +92,8 @@ class Success implements HttpGetActionInterface
         if (!$order->getEntityId()) {
             throw new InvalidOrderId('Invalid order ID');
         }
+
+        $this->request->setParams(['order_id' => (int)$order->getEntityId()]);
 
         /** @var Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
