@@ -31,6 +31,7 @@ class ConfigSectionTest extends AbstractBackendController
     /**
      * @magentoDataFixture Magento/Store/_files/second_store.php
      * @magentoConfigFixture default/web/url/use_store 1
+     * @magentoConfigFixture fixture_second_store_store web/url/use_store 1
      */
     public function testGetFrontendLinkUsesStoreFromRequest()
     {
