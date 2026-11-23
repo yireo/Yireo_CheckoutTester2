@@ -6,6 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.5] - 23 November 2026
+### Fixed
+- Prevent IP allowlist bypass and guest order takeover
+- Merge Markdown files into README
+- Set use_store at store scope for Magento 2.4.8 compatibility
+- Replace order_id request param with the resolved order ID
+- Add success page tests for Luma and Hyva
+- Cover order selection, session registration, page meta and admin config section
+- Cover Access, Success controller guards and remaining Config methods
+- Constrain phpunit and drop unused composer/composer from require-dev
+- Pass explicit characters to trim() for PHP 8.6 compatibility
+- Replace real-environment module check with integration-test-helper traits
+- Beautify README
+- Update MODULE.json
+- Remove background of sponsoring box for Nebula compat
+
+### Removed
+- Remove PHP 8.1 support, add PHP 8.5 support
+
 ## [1.0.4] - 24 October 2024
 ### Fixed
 - Add funding options
