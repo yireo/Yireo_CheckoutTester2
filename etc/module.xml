@@ -3,10 +3,10 @@
 /**
  * CheckoutTester plugin for Magento 2
  *
- * @package     Yireo_CheckoutTester2
- * @author      Yireo
- * @copyright   Copyright 2022 Yireo (https://www.yireo.com/)
- * @license     Open Source License
+ * @package         Yireo_CheckoutTester2
+ * @author            Yireo
+ * @copyright     Copyright 2022 Yireo (https://www.yireo.com/)
+ * @license         Open Source License
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
