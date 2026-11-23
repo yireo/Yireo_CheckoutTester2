@@ -2,13 +2,15 @@
 
 namespace Yireo\CheckoutTester2\Utility;
 
-use Magento\Eav\Model\Entity\Collection\AbstractCollection;
-use Magento\Framework\Api\Search\SearchCriteriaBuilder;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SortOrder;
+use Magento\Framework\Api\SortOrderBuilder;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderSearchResultInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Yireo\CheckoutTester2\Config\Config;
 use Magento\Sales\Api\Data\OrderInterfaceFactory as OrderFactory;
 
@@ -19,19 +21,25 @@ class GetOrder
     private OrderFactory $orderFactory;
     private OrderRepositoryInterface $orderRepository;
     private SearchCriteriaBuilder $searchCriteriaBuilder;
+    private SortOrderBuilder $sortOrderBuilder;
+    private StoreManagerInterface $storeManager;
 
     public function __construct(
         RequestInterface $request,
         Config $config,
         OrderFactory $orderFactory,
         OrderRepositoryInterface $orderRepository,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        SortOrderBuilder $sortOrderBuilder,
+        StoreManagerInterface $storeManager
     ) {
         $this->request = $request;
         $this->config = $config;
         $this->orderFactory = $orderFactory;
         $this->orderRepository = $orderRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->sortOrderBuilder = $sortOrderBuilder;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -108,10 +116,16 @@ class GetOrder
         }
 
         try {
-            return $this->orderRepository->get($orderId);
+            $order = $this->orderRepository->get($orderId);
         } catch (NoSuchEntityException $exception) {
             return $this->getEmptyOrder();
         }
+
+        if ((int)$order->getStoreId() !== $this->getCurrentStoreId()) {
+            return $this->getEmptyOrder();
+        }
+
+        return $order;
     }
 
     /**
@@ -120,13 +134,20 @@ class GetOrder
     private function getOrderSearchResult(): OrderSearchResultInterface
     {
         $searchCriteriaBuilder = $this->searchCriteriaBuilder;
-        $searchCriteriaBuilder->addSortOrder('created_at', AbstractCollection::SORT_ORDER_DESC);
+        $searchCriteriaBuilder->addFilter('store_id', $this->getCurrentStoreId());
+        $searchCriteriaBuilder->addSortOrder(
+            $this->sortOrderBuilder->setField('created_at')->setDirection(SortOrder::SORT_DESC)->create()
+        );
 
         $searchCriteria = $searchCriteriaBuilder->create();
         $searchCriteria->setPageSize(1);
-        $searchCriteria->setCurrentPage(0);
-        $searchCriteria->getSortOrders();
+        $searchCriteria->setCurrentPage(1);
 
         return $this->orderRepository->getList($searchCriteria);
+    }
+
+    private function getCurrentStoreId(): int
+    {
+        return (int)$this->storeManager->getStore()->getId();
     }
 }

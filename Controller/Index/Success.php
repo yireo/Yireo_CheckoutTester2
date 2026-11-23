@@ -10,14 +10,14 @@
 
 namespace Yireo\CheckoutTester2\Controller\Index;
 
-use Magento\Backend\Model\View\Result\Page;
 use Magento\Checkout\Model\Session;
-use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\HttpGetActionInterface;
-use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Response\HttpInterface;
+use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Event\Manager as EventManager;
 use Magento\Framework\Registry;
+use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Sales\Api\Data\OrderInterface;
 use Yireo\CheckoutTester2\Config\Config as ModuleConfig;
@@ -36,6 +36,7 @@ class Success implements HttpGetActionInterface
     private GetOrder $getOrder;
     private EventManager $eventManager;
     private RequestInterface $request;
+    private ResponseInterface $response;
 
     /**
      * Success constructor.
@@ -48,6 +49,7 @@ class Success implements HttpGetActionInterface
      * @param GetOrder $getOrder
      * @param EventManager $eventManager
      * @param RequestInterface $request
+     * @param ResponseInterface $response
      */
     public function __construct(
         PageFactory $resultPageFactory,
@@ -57,7 +59,8 @@ class Success implements HttpGetActionInterface
         Access $access,
         GetOrder $getOrder,
         EventManager $eventManager,
-        RequestInterface $request
+        RequestInterface $request,
+        ResponseInterface $response
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->registry = $registry;
@@ -67,12 +70,13 @@ class Success implements HttpGetActionInterface
         $this->getOrder = $getOrder;
         $this->eventManager = $eventManager;
         $this->request = $request;
+        $this->response = $response;
     }
 
     /**
      * Success page action
      *
-     * @return Page
+     * @return ResponseInterface
      *
      * @throws ForbiddenAccess
      * @throws InvalidOrderId
@@ -80,17 +84,17 @@ class Success implements HttpGetActionInterface
     public function execute()
     {
         if ($this->moduleConfig->enabled() === false) {
-            throw new ForbiddenAccess('Module is disabled');
+            throw new ForbiddenAccess(__('Module is disabled'));
         }
 
         if ($this->access->hasAccess() === false) {
-            throw new ForbiddenAccess('Access denied for IP ' . $this->access->getCurrentIpAddress());
+            throw new ForbiddenAccess(__('Access denied'));
         }
 
         $order = $this->getOrder->get();
 
         if (!$order->getEntityId()) {
-            throw new InvalidOrderId('Invalid order ID');
+            throw new InvalidOrderId(__('Invalid order ID'));
         }
 
         $this->request->setParams(['order_id' => (int)$order->getEntityId()]);
@@ -101,11 +105,26 @@ class Success implements HttpGetActionInterface
 
         $this->registerOrder($order);
 
-        return $resultPage;
+        /** @var HttpInterface $response */
+        $response = $this->response;
+        $lastOrderId = $this->checkoutSession->getLastOrderId();
+        $lastRealOrderId = $this->checkoutSession->getLastRealOrderId();
+
+        try {
+            $this->checkoutSession->setLastOrderId($order->getEntityId())
+                ->setLastRealOrderId($order->getIncrementId());
+            $this->dispatchEvents($order);
+            $resultPage->renderResult($response);
+        } finally {
+            $this->checkoutSession->setLastOrderId($lastOrderId)
+                ->setLastRealOrderId($lastRealOrderId);
+        }
+
+        return $response;
     }
 
     /**
-     * Method to register the order in this session
+     * Method to register the order in the registry
      *
      * @param OrderInterface $order
      */
@@ -115,11 +134,6 @@ class Success implements HttpGetActionInterface
         if (empty($currentOrder)) {
             $this->registry->register('current_order', $order);
         }
-
-        $this->checkoutSession->setLastOrderId($order->getEntityId())
-            ->setLastRealOrderId($order->getIncrementId());
-
-        $this->dispatchEvents($order);
     }
 
     /**

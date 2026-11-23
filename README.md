@@ -39,6 +39,17 @@ You can also test a specific order with the following:
 
     http://MAGENTO2/checkouttester/index/success/order_id/1234
 
+### Access
+The success page shows real order data, so access is restricted with the setting **Development IP**:
+
+- A comma-separated list of IP addresses only allows those addresses;
+- `*` allows every IP address;
+- When empty, every IP address is allowed in developer mode only, and access is denied in other modes.
+
+The IP address is the address of the connection (`REMOTE_ADDR`). Headers like `Client-IP` are ignored. The
+`X-Forwarded-For` header is only used when the connection comes from an IP listed in the setting **Trusted Proxies**
+(like Varnish or a load balancer); then the last address that is not a trusted proxy is used. Only orders of the current store view are shown. Blocked requests show a 404 page.
+
 ### Tip
 If you like this extension, make sure to view our EmailTester2 extension. We do not want to build a shop without it.
 

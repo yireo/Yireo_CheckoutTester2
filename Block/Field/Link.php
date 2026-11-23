@@ -51,8 +51,8 @@ class Link extends Field
     protected function _getElementHtml(AbstractElement $element): string
     {
         $link = $this->getFrontendLink();
-        $html = '<a href="' . $link . '" target="_new">'
-            . __('Open success page in new window')
+        $html = '<a href="' . $this->escapeUrl($link) . '" target="_blank" rel="noopener noreferrer">'
+            . $this->escapeHtml(__('Open success page in new window'))
             . '</a>';
 
         return $html;
@@ -81,8 +81,8 @@ class Link extends Field
     protected function getStoreId(): string
     {
         $storeId = $this->_request->getParam('store');
-        if (!empty($storeId)) {
-            return (string)$storeId;
+        if (is_string($storeId) && $storeId !== '') {
+            return (string)$this->_storeManager->getStore($storeId)->getCode();
         }
 
         return (string)$this->_storeManager->getStore()->getCode();

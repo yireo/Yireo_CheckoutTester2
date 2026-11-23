@@ -15,8 +15,6 @@ use Magento\Framework\Registry;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order;
 use Magento\TestFramework\TestCase\AbstractController as ControllerTestCase;
-use Yireo\CheckoutTester2\Exception\ForbiddenAccess;
-use Yireo\CheckoutTester2\Exception\InvalidOrderId;
 use Laminas\Stdlib\Parameters;
 
 class BrowseTest extends ControllerTestCase
@@ -26,8 +24,8 @@ class BrowseTest extends ControllerTestCase
      */
     public function testIfPageFailsIfDisabled()
     {
-        $this->expectException(ForbiddenAccess::class);
         $this->dispatch('/checkouttester/index/success');
+        $this->assert404NotFound();
     }
 
     /**
@@ -47,8 +45,8 @@ class BrowseTest extends ControllerTestCase
      */
     public function testIfPageFailsWithoutValidOrder()
     {
-        $this->expectException(InvalidOrderId::class);
         $this->dispatch('/checkouttester/index/success');
+        $this->assert404NotFound();
     }
 
     /**
@@ -58,9 +56,9 @@ class BrowseTest extends ControllerTestCase
      */
     public function testIfPageFailsWithWrongIpSettings()
     {
-        $this->expectException(ForbiddenAccess::class);
-        $this->getRequest()->setServer(new Parameters(['HTTP_CLIENT_IP' => '1.1.1.2']));
+        $this->setServer(['REMOTE_ADDR' => '1.1.1.2']);
         $this->dispatch('/checkouttester/index/success');
+        $this->assert404NotFound();
     }
 
     /**
@@ -68,9 +66,26 @@ class BrowseTest extends ControllerTestCase
      * @magentoConfigFixture current_store checkouttester2/settings/enabled 1
      * @magentoConfigFixture current_store checkouttester2/settings/ip 1.1.1.1
      */
-    public function testIfPageFailsWithCorrectIpSettings()
+    public function testIfPageFailsWithSpoofedProxyHeaders()
     {
-        $this->getRequest()->setServer(new Parameters(['HTTP_CLIENT_IP' => '1.1.1.1']));
+        $this->setServer([
+            'REMOTE_ADDR' => '6.6.6.6',
+            'HTTP_CLIENT_IP' => '1.1.1.1',
+            'HTTP_X_FORWARDED_FOR' => '1.1.1.1',
+        ]);
+        $this->dispatch('/checkouttester/index/success');
+        $this->assert404NotFound();
+        $this->assertStringNotContainsString('Thank you for your purchase!', (string)$this->getResponse()->getBody());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     * @magentoConfigFixture current_store checkouttester2/settings/enabled 1
+     * @magentoConfigFixture current_store checkouttester2/settings/ip 1.1.1.1
+     */
+    public function testIfPageWorksWithCorrectIpSettings()
+    {
+        $this->setServer(['REMOTE_ADDR' => '1.1.1.1']);
         $this->dispatch('/checkouttester/index/success');
         $body = (string)$this->getResponse()->getBody();
         $this->assertNotEmpty($body);
@@ -108,18 +123,21 @@ class BrowseTest extends ControllerTestCase
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture current_store checkouttester2/settings/enabled 1
      */
-    public function testIfOrderIsRegisteredInSession()
+    public function testIfOrderIsRegisteredButNotStoredInSession()
     {
         $order = $this->getFixtureOrder();
+        $checkoutSession = $this->_objectManager->get(CheckoutSession::class);
+        $checkoutSession->setLastOrderId(null)->setLastRealOrderId(null);
+
         $this->dispatch('/checkouttester/index/success');
+        $this->assertStringContainsString((string)$order->getIncrementId(), (string)$this->getResponse()->getBody());
 
         $currentOrder = $this->_objectManager->get(Registry::class)->registry('current_order');
         $this->assertInstanceOf(OrderInterface::class, $currentOrder);
         $this->assertSame((int)$order->getEntityId(), (int)$currentOrder->getEntityId());
 
-        $checkoutSession = $this->_objectManager->get(CheckoutSession::class);
-        $this->assertSame((int)$order->getEntityId(), (int)$checkoutSession->getLastOrderId());
-        $this->assertSame((string)$order->getIncrementId(), (string)$checkoutSession->getLastRealOrderId());
+        $this->assertEmpty($checkoutSession->getLastOrderId());
+        $this->assertEmpty($checkoutSession->getLastRealOrderId());
     }
 
     /**
@@ -134,6 +152,11 @@ class BrowseTest extends ControllerTestCase
         $this->assertStringContainsString('<title>CheckoutTester Success Page</title>', $body);
         $this->assertMatchesRegularExpression('/<meta name="robots" content="NOINDEX,NOFOLLOW"/', $body);
         $this->assertMatchesRegularExpression('/<body[^>]+class="[^"]*checkout-onepage-success/', $body);
+    }
+
+    private function setServer(array $server): void
+    {
+        $this->getRequest()->setServer(new Parameters($server));
     }
 
     private function getFixtureOrder(): OrderInterface

@@ -48,10 +48,10 @@ class GetOrderTest extends TestCase
     public function testGetReturnsOrderFromConfigWithUnknownOrderInUrl()
     {
         $this->setCreatedAtOfOrders();
-        $this->setOrderIdInConfig($this->getOrderId('100000003'));
+        $this->setOrderIdInConfig($this->getOrderId('100000004'));
         $this->getRequest()->setParam('order_id', 999999999);
 
-        $this->assertSame('100000003', $this->getTarget()->get()->getIncrementId());
+        $this->assertSame('100000004', $this->getTarget()->get()->getIncrementId());
     }
 
     /**
@@ -71,6 +71,17 @@ class GetOrderTest extends TestCase
     public function testGetReturnsLatestOrderByCreationDate()
     {
         $this->setCreatedAtOfOrders();
+
+        $this->assertSame('100000002', $this->getTarget()->get()->getIncrementId());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order_list.php
+     */
+    public function testGetSkipsOrdersOfOtherStores()
+    {
+        $this->setCreatedAtOfOrders();
+        $this->getRequest()->setParam('order_id', $this->getOrderId('100000003'));
 
         $this->assertSame('100000002', $this->getTarget()->get()->getIncrementId());
     }

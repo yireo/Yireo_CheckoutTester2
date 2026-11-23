@@ -46,7 +46,7 @@ export async function configure(page: Page, theme: string, settings: Record<stri
                     'checkouttester2/settings/enabled': 1,
                     'checkouttester2/settings/only_in_dev_mode': 0,
                     'checkouttester2/settings/order_id': 0,
-                    'checkouttester2/settings/ip': '',
+                    'checkouttester2/settings/ip': '*',
                     ...settings,
                 },
             }),

@@ -4,6 +4,7 @@ namespace Yireo\CheckoutTester2\Test\Unit\Controller\Index;
 
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Response\Http as HttpResponse;
 use Magento\Framework\Event\Manager as EventManager;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Result\Page;
@@ -26,6 +27,8 @@ class SuccessTest extends TestCase
     private EventManager&MockObject $eventManager;
     private PageFactory&MockObject $pageFactory;
     private RequestInterface&MockObject $request;
+    private HttpResponse&MockObject $response;
+    private array $sessionData = [];
 
     protected function setUp(): void
     {
@@ -35,6 +38,8 @@ class SuccessTest extends TestCase
         $this->eventManager = $this->createMock(EventManager::class);
         $this->pageFactory = $this->createMock(PageFactory::class);
         $this->request = $this->createMock(RequestInterface::class);
+        $this->response = $this->createMock(HttpResponse::class);
+        $this->sessionData = [];
     }
 
     public function testExecuteFailsWhenDisabled()
@@ -52,11 +57,10 @@ class SuccessTest extends TestCase
     {
         $this->config->method('enabled')->willReturn(true);
         $this->access->method('hasAccess')->willReturn(false);
-        $this->access->method('getCurrentIpAddress')->willReturn('1.2.3.4');
         $this->getOrder->expects($this->never())->method('get');
 
         $this->expectException(ForbiddenAccess::class);
-        $this->expectExceptionMessage('Access denied for IP 1.2.3.4');
+        $this->expectExceptionMessage('Access denied');
         $this->getTargetObject()->execute();
     }
 
@@ -79,8 +83,30 @@ class SuccessTest extends TestCase
         $this->getOrder->method('get')->willReturn($this->getOrderMock(42));
         $this->pageFactory->method('create')->willReturn($page);
         $this->request->expects($this->once())->method('setParams')->with(['order_id' => 42]);
+        $page->expects($this->once())->method('renderResult')->with($this->response);
 
-        $this->assertSame($page, $this->getTargetObject()->execute());
+        $this->assertSame($this->response, $this->getTargetObject()->execute());
+    }
+
+    public function testExecuteOnlySetsLastOrderInSessionWhileRendering()
+    {
+        $this->sessionData = ['last_order_id' => 7, 'last_real_order_id' => '000000007'];
+        $page = $this->createMock(Page::class);
+        $this->config->method('enabled')->willReturn(true);
+        $this->access->method('hasAccess')->willReturn(true);
+        $this->getOrder->method('get')->willReturn($this->getOrderMock(42, '000000042'));
+        $this->pageFactory->method('create')->willReturn($page);
+
+        $renderedSessionData = [];
+        $page->method('renderResult')->willReturnCallback(function () use (&$renderedSessionData, $page) {
+            $renderedSessionData = $this->sessionData;
+            return $page;
+        });
+
+        $this->getTargetObject()->execute();
+
+        $this->assertSame(['last_order_id' => 42, 'last_real_order_id' => '000000042'], $renderedSessionData);
+        $this->assertSame(['last_order_id' => 7, 'last_real_order_id' => '000000007'], $this->sessionData);
     }
 
     public function testDispatchEventsWhenAllowed()
@@ -102,10 +128,11 @@ class SuccessTest extends TestCase
         $this->getTargetObject()->dispatchEvents($this->getOrderMock(42));
     }
 
-    private function getOrderMock(?int $entityId): OrderInterface&MockObject
+    private function getOrderMock(?int $entityId, ?string $incrementId = null): OrderInterface&MockObject
     {
         $order = $this->createMock(OrderInterface::class);
         $order->method('getEntityId')->willReturn($entityId);
+        $order->method('getIncrementId')->willReturn($incrementId);
 
         return $order;
     }
@@ -113,7 +140,16 @@ class SuccessTest extends TestCase
     private function getTargetObject(): Target
     {
         $session = $this->createMock(Session::class);
-        $session->method('__call')->willReturnSelf();
+        $session->method('__call')->willReturnCallback(function (string $method, array $args) use ($session) {
+            $keys = ['LastOrderId' => 'last_order_id', 'LastRealOrderId' => 'last_real_order_id'];
+            $key = $keys[substr($method, 3)] ?? $method;
+            if (str_starts_with($method, 'set')) {
+                $this->sessionData[$key] = $args[0] ?? null;
+                return $session;
+            }
+
+            return $this->sessionData[$key] ?? null;
+        });
 
         return new Target(
             $this->pageFactory,
@@ -123,7 +159,8 @@ class SuccessTest extends TestCase
             $this->access,
             $this->getOrder,
             $this->eventManager,
-            $this->request
+            $this->request,
+            $this->response
         );
     }
 }

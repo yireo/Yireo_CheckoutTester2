@@ -71,15 +71,21 @@ export function defineCheckoutTesterTests(theme: string) {
         await expectBlocked(page, response);
     });
 
-    test('allows access for a whitelisted IP address', async function ({page}) {
-        await configure(page, theme, {'checkouttester2/settings/ip': '10.0.0.1, 1.1.1.1'});
-        const response = await openSuccessPage(page, {}, {'Client-IP': '1.1.1.1'});
+    test('allows access for every IP address with a wildcard', async function ({page}) {
+        await configure(page, theme, {'checkouttester2/settings/ip': '10.0.0.1, *'});
+        const response = await openSuccessPage(page);
         await expectSuccessPage(page, response, latestOrder.incrementId);
     });
 
     test('blocks access for an IP address that is not whitelisted', async function ({page}) {
         await configure(page, theme, {'checkouttester2/settings/ip': '10.0.0.1, 1.1.1.1'});
-        const response = await openSuccessPage(page, {}, {'Client-IP': '1.1.1.2'});
+        const response = await openSuccessPage(page);
+        await expectBlocked(page, response);
+    });
+
+    test('blocks access with a spoofed Client-IP or X-Forwarded-For header', async function ({page}) {
+        await configure(page, theme, {'checkouttester2/settings/ip': '1.1.1.1'});
+        const response = await openSuccessPage(page, {}, {'Client-IP': '1.1.1.1', 'X-Forwarded-For': '1.1.1.1'});
         await expectBlocked(page, response);
     });
 }

@@ -9,8 +9,8 @@
 
 namespace Yireo\CheckoutTester2\Exception;
 
-use Exception;
+use Magento\Framework\Exception\NotFoundException;
 
-class ForbiddenAccess extends Exception
+class ForbiddenAccess extends NotFoundException
 {
 }

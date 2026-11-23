@@ -8,6 +8,8 @@ use Yireo\CheckoutTester2\Config\Config;
 
 class Access
 {
+    public const ALLOW_ALL = '*';
+
     private Config $config;
     private RequestInterface $request;
 
@@ -26,37 +28,31 @@ class Access
      */
     public function hasAccess(): bool
     {
-        $ip = trim($this->config->getIpAddress(), " \f\n\r\t\v\x00");
-        if (false === strlen($ip) > 0) {
+        $allowedIps = $this->splitList($this->config->getIpAddress());
+        if (empty($allowedIps)) {
+            return $this->config->isDeveloperMode();
+        }
+
+        if (in_array(self::ALLOW_ALL, $allowedIps, true)) {
             return true;
         }
 
-        $realIp = $this->getCurrentIpAddress();
-        if (!$realIp) {
+        $currentIp = $this->getCurrentIpAddress();
+        if ($currentIp === '') {
             return false;
         }
 
-        $ips = explode(',', $ip);
-
-        foreach ($ips as $ip) {
-            $ip = trim($ip, " \f\n\r\t\v\x00");
-
-            if (empty($ip)) {
-                continue;
+        foreach ($allowedIps as $allowedIp) {
+            if ($this->normalizeIpAddress($allowedIp) === $currentIp) {
+                return true;
             }
-
-            if ($ip !== $realIp) {
-                continue;
-            }
-
-            return true;
         }
 
         return false;
     }
 
     /**
-     * Get the current IP address
+     * Get the IP address of the connection. X-Forwarded-For is only used when the connection comes from a trusted proxy
      *
      * @return string
      */
@@ -64,9 +60,59 @@ class Access
     {
         /** @var Request $request */
         $request = $this->request;
-        $ip = (string)$request->getClientIp();
-        $forwarded = explode(', ', $ip);
+        $remoteIp = $this->normalizeIpAddress((string)$request->getServer('REMOTE_ADDR'));
+        if ($remoteIp === '') {
+            return '';
+        }
 
-        return ($forwarded ? $forwarded[0] : $ip);
+        $trustedProxies = array_map([$this, 'normalizeIpAddress'], $this->splitList($this->config->getTrustedProxies()));
+        if (!in_array($remoteIp, $trustedProxies, true)) {
+            return $remoteIp;
+        }
+
+        $forwardedIps = array_reverse($this->splitList((string)$request->getServer('HTTP_X_FORWARDED_FOR')));
+        foreach ($forwardedIps as $forwardedIp) {
+            $forwardedIp = $this->normalizeIpAddress($forwardedIp);
+            if ($forwardedIp === '') {
+                return '';
+            }
+
+            if (!in_array($forwardedIp, $trustedProxies, true)) {
+                return $forwardedIp;
+            }
+        }
+
+        return $remoteIp;
+    }
+
+    /**
+     * @param string $list
+     * @return string[]
+     */
+    private function splitList(string $list): array
+    {
+        $items = [];
+        foreach (explode(',', $list) as $item) {
+            $item = trim($item, " \f\n\r\t\v\x00");
+            if ($item !== '') {
+                $items[] = $item;
+            }
+        }
+
+        return $items;
+    }
+
+    private function normalizeIpAddress(string $ip): string
+    {
+        if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
+            return '';
+        }
+
+        $packedIp = inet_pton($ip);
+        if ($packedIp === false) {
+            return '';
+        }
+
+        return (string)inet_ntop($packedIp);
     }
 }

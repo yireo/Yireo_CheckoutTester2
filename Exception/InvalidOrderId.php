@@ -9,8 +9,8 @@
 
 namespace Yireo\CheckoutTester2\Exception;
 
-use Exception;
+use Magento\Framework\Exception\NotFoundException;
 
-class InvalidOrderId extends Exception
+class InvalidOrderId extends NotFoundException
 {
 }

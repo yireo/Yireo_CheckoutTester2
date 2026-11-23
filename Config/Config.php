@@ -27,11 +27,21 @@ class Config
     public function enabled(): bool
     {
         $onlyInDevMode = (bool)$this->getConfigValue('only_in_dev_mode');
-        if ($onlyInDevMode && $this->appState->getMode() !== State::MODE_DEVELOPER) {
+        if ($onlyInDevMode && !$this->isDeveloperMode()) {
             return false;
         }
 
         return (bool)$this->getConfigValue('enabled');
+    }
+
+    /**
+     * Check whether Magento runs in developer mode
+     *
+     * @return bool
+     */
+    public function isDeveloperMode(): bool
+    {
+        return $this->appState->getMode() === State::MODE_DEVELOPER;
     }
 
     /**
@@ -42,6 +52,16 @@ class Config
     public function getIpAddress(): string
     {
         return (string)$this->getConfigValue('ip');
+    }
+
+    /**
+     * Get the IP addresses of reverse proxies whose X-Forwarded-For header is trusted
+     *
+     * @return string
+     */
+    public function getTrustedProxies(): string
+    {
+        return (string)$this->getConfigValue('trusted_proxies');
     }
 
     /**

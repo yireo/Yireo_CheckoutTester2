@@ -37,21 +37,28 @@
                     <depends>
                         <field id="checkouttester2/settings/enabled">1</field>
                     </depends>
-                    <comment><![CDATA[Numerical ID of sales-order entity. If zero, latest order is picked.]]></comment>
+                    <comment><![CDATA[Numerical ID of sales-order entity. If zero, the latest order of the current store view is picked. Orders of other store views are never shown.]]></comment>
                 </field>
                 <field id="ip" translate="label" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Development IP</label>
                     <depends>
                         <field id="checkouttester2/settings/enabled">1</field>
                     </depends>
-                    <comment><![CDATA[CSV-list of IP-addresses allowed access. If empty, all IPs are allowed.]]></comment>
+                    <comment><![CDATA[CSV-list of IP-addresses allowed access. Use * to allow all IPs. If empty, all IPs are allowed in developer mode only. The IP of the connection is used, unless it comes from a trusted proxy.]]></comment>
+                </field>
+                <field id="trusted_proxies" translate="label" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Trusted Proxies</label>
+                    <depends>
+                        <field id="checkouttester2/settings/enabled">1</field>
+                    </depends>
+                    <comment><![CDATA[CSV-list of IP-addresses of your own reverse proxies (like Varnish or a load balancer). Only for connections from these IPs, the X-Forwarded-For header is used to determine the visitor IP. Never add IPs that you do not control.]]></comment>
                 </field>
                 <field id="checkout_onepage_controller_success_action" type="select" translate="label" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Generate event</label>
                     <depends>
                         <field id="checkouttester2/settings/enabled">1</field>
                     </depends>
-                    <comment><![CDATA[Event "checkout_onepage_controller_success_action" is triggered.]]></comment>
+                    <comment><![CDATA[Event "checkout_onepage_controller_success_action" is triggered with every page view. Warning: this may send conversions to analytics or trigger other order processing again.]]></comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="usage" type="select" translate="label" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">

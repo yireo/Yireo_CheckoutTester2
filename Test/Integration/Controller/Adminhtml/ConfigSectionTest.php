@@ -2,6 +2,7 @@
 
 namespace Yireo\CheckoutTester2\Test\Integration\Controller\Adminhtml;
 
+use Magento\Framework\Acl\Builder as AclBuilder;
 use Magento\Framework\View\LayoutInterface;
 use Magento\TestFramework\TestCase\AbstractBackendController;
 use Yireo\CheckoutTester2\Block\Field\Link;
@@ -21,6 +22,18 @@ class ConfigSectionTest extends AbstractBackendController
         $this->assertStringContainsString('class="yireo-funding"', $body);
         $this->assertStringContainsString('Open success page in new window', $body);
         $this->assertMatchesRegularExpression('#href="[^"]+checkouttester/index/success/?"#', $body);
+    }
+
+    public function testAclResourceIsDefined()
+    {
+        $acl = $this->_objectManager->get(AclBuilder::class)->getAcl();
+        $this->assertTrue($acl->hasResource('Yireo_CheckoutTester2::config'));
+    }
+
+    public function testLinkIsOpenedWithoutOpener()
+    {
+        $this->dispatch('backend/admin/system_config/edit/section/checkouttester2/');
+        $this->assertStringContainsString('rel="noopener noreferrer"', (string)$this->getResponse()->getBody());
     }
 
     public function testGetFrontendLink()
