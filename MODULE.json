@@ -9,5 +9,83 @@
         "Magento_Store"
     ],
     "phpcs_severity": "7",
-    "phpstan_level": "1"
+    "phpstan_level": "1",
+    "php_versions": [
+        "7.4",
+        "8.1",
+        "8.2"
+    ],
+    "skip_magento_versions": [],
+    "skip_css_utils": false,
+    "modules": [
+        "Magento_AdminNotification",
+        "Magento_Backend",
+        "Magento_Catalog",
+        "Magento_CatalogInventory",
+        "Magento_Checkout",
+        "Magento_Cms",
+        "Magento_Config",
+        "Magento_Csp",
+        "Magento_Customer",
+        "Magento_Directory",
+        "Magento_Eav",
+        "Magento_Indexer",
+        "Magento_MediaGalleryUiApi",
+        "Magento_Payment",
+        "Magento_Quote",
+        "Magento_Rule",
+        "Magento_Sales",
+        "Magento_SalesSequence",
+        "Magento_Store",
+        "Magento_Theme",
+        "Magento_Variable"
+    ],
+    "components": [],
+    "config": [
+        {
+            "path": "checkouttester2/settings/funding",
+            "label": "Settings > Funding",
+            "description": ""
+        },
+        {
+            "path": "checkouttester2/settings/enabled",
+            "label": "Settings > Enabled",
+            "description": ""
+        },
+        {
+            "path": "checkouttester2/settings/only_in_dev_mode",
+            "label": "Settings > Only in Developer Mode",
+            "description": ""
+        },
+        {
+            "path": "checkouttester2/settings/order_id",
+            "label": "Settings > Sales Order ID",
+            "description": ""
+        },
+        {
+            "path": "checkouttester2/settings/ip",
+            "label": "Settings > Development IP",
+            "description": ""
+        },
+        {
+            "path": "checkouttester2/settings/trusted_proxies",
+            "label": "Settings > Trusted Proxies",
+            "description": ""
+        },
+        {
+            "path": "checkouttester2/settings/checkout_onepage_controller_success_action",
+            "label": "Settings > Generate event",
+            "description": ""
+        },
+        {
+            "path": "checkouttester2/settings/usage",
+            "label": "Settings > Usage",
+            "description": ""
+        }
+    ],
+    "tests": {
+        "unit": 33,
+        "integration": 23,
+        "functional": 0
+    }
 }
