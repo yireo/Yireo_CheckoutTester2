@@ -14,4 +14,3 @@ class Funding extends Field
         return $this->toHtml();
     }
 }
-

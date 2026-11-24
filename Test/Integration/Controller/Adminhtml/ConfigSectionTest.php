@@ -61,12 +61,12 @@ class ConfigSectionTest extends AbstractBackendController
     {
         $this->dispatch('backend/admin/system_config/edit/section/checkouttester2/');
         $body = (string)$this->getResponse()->getBody();
-        $this->assertStringContainsString(
-            '<a href="https://github.com/sponsors/yireo" target="_blank" rel="noopener noreferrer">',
+        $this->assertMatchesRegularExpression(
+            '#<a href="https://github.com/sponsors/yireo"\s+target="_blank"\s+rel="noopener noreferrer">#',
             $body
         );
-        $this->assertStringContainsString(
-            '<a href="https://github.com/sponsors/jissereitsma" target="_blank" rel="noopener noreferrer">',
+        $this->assertMatchesRegularExpression(
+            '#<a href="https://github.com/sponsors/jissereitsma"\s+target="_blank"\s+rel="noopener noreferrer">#',
             $body
         );
     }
