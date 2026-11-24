@@ -99,9 +99,18 @@ class ConfigTest extends TestCase
 
     public function testGetIpAddress()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '127.0.0.1,10.0.0.1');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '127.0.0.1,10.0.0.1', 'default');
         $target = $this->getTargetObject();
         $this->assertSame('127.0.0.1,10.0.0.1', $target->getIpAddress());
+    }
+
+    public function testGetIpAddressIgnoresStoreScope()
+    {
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '*');
+        $this->setScopeConfigValue('checkouttester2/settings/trusted_proxies', '10.0.0.1');
+        $target = $this->getTargetObject();
+        $this->assertSame('', $target->getIpAddress());
+        $this->assertSame('', $target->getTrustedProxies());
     }
 
     public function testGetIpAddressWhenEmpty()

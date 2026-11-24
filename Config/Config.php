@@ -51,7 +51,7 @@ class Config
      */
     public function getIpAddress(): string
     {
-        return (string)$this->getConfigValue('ip');
+        return (string)$this->getDefaultConfigValue('ip');
     }
 
     /**
@@ -61,7 +61,7 @@ class Config
      */
     public function getTrustedProxies(): string
     {
-        return (string)$this->getConfigValue('trusted_proxies');
+        return (string)$this->getDefaultConfigValue('trusted_proxies');
     }
 
     /**
@@ -107,5 +107,20 @@ class Config
         }
 
         return $value;
+    }
+
+    /**
+     * Return a configuration value of the default scope
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    private function getDefaultConfigValue(string $key)
+    {
+        return $this->scopeConfig->getValue(
+            'checkouttester2/settings/' . $key,
+            ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+        );
     }
 }

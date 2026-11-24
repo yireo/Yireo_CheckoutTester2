@@ -28,6 +28,23 @@ class ConfigSectionTest extends AbstractBackendController
         $this->assertMatchesRegularExpression('#href="[^"]+checkouttester/index/success/?"#', $body);
     }
 
+    public function testIpSettingsAreOnlyShownInDefaultScope()
+    {
+        $this->dispatch('backend/admin/system_config/edit/section/checkouttester2/');
+        $body = (string)$this->getResponse()->getBody();
+        $this->assertStringContainsString('checkouttester2_settings_ip', $body);
+        $this->assertStringContainsString('checkouttester2_settings_trusted_proxies', $body);
+    }
+
+    public function testIpSettingsAreNotShownInWebsiteScope()
+    {
+        $this->dispatch('backend/admin/system_config/edit/section/checkouttester2/website/1/');
+        $body = (string)$this->getResponse()->getBody();
+        $this->assertStringContainsString('checkouttester2_settings_order_id', $body);
+        $this->assertStringNotContainsString('checkouttester2_settings_ip', $body);
+        $this->assertStringNotContainsString('checkouttester2_settings_trusted_proxies', $body);
+    }
+
     public function testAclResourceIsDefined()
     {
         $acl = $this->_objectManager->get(AclBuilder::class)->getAcl();
