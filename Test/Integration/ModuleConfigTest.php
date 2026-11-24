@@ -10,6 +10,8 @@
 
 namespace Yireo\CheckoutTester2\Test\Integration;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 use Yireo\IntegrationTestHelper\Test\Integration\Traits\AssertModuleIsEnabled;
 use Yireo\IntegrationTestHelper\Test\Integration\Traits\AssertModuleIsRegistered;
@@ -27,5 +29,11 @@ class ModuleConfigTest extends TestCase
     public function testModuleIsEnabled()
     {
         $this->assertModuleIsEnabled('Yireo_CheckoutTester2');
+    }
+
+    public function testModuleIsDisabledByDefault()
+    {
+        $scopeConfig = Bootstrap::getObjectManager()->get(ScopeConfigInterface::class);
+        $this->assertSame('0', (string)$scopeConfig->getValue('checkouttester2/settings/enabled'));
     }
 }
