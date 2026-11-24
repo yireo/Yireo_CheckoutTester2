@@ -58,6 +58,52 @@ class ConfigSectionTest extends AbstractBackendController
         $this->assertStringContainsString('/fixture_second_store/checkouttester/index/success', $link);
     }
 
+    /**
+     * @magentoDataFixture Magento/Store/_files/second_store.php
+     * @magentoConfigFixture default/web/url/use_store 1
+     * @magentoConfigFixture fixture_second_store_store web/url/use_store 1
+     */
+    public function testGetFrontendLinkUsesDefaultStoreWithoutScope()
+    {
+        $this->assertDefaultStoreLink($this->getLinkBlock()->getFrontendLink());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Store/_files/second_store.php
+     * @magentoConfigFixture default/web/url/use_store 1
+     * @magentoConfigFixture fixture_second_store_store web/url/use_store 1
+     */
+    public function testGetFrontendLinkFallsBackToDefaultStoreWithUnknownStore()
+    {
+        $this->getRequest()->setParam('store', 'foobar');
+        $this->assertDefaultStoreLink($this->getLinkBlock()->getFrontendLink());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Store/_files/second_store.php
+     * @magentoConfigFixture default/web/url/use_store 1
+     * @magentoConfigFixture fixture_second_store_store web/url/use_store 1
+     */
+    public function testGetFrontendLinkFallsBackToDefaultStoreWithUnknownWebsite()
+    {
+        $this->getRequest()->setParam('website', '999999');
+        $this->assertDefaultStoreLink($this->getLinkBlock()->getFrontendLink());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Store/_files/second_website_with_store_group_and_store.php
+     * @magentoConfigFixture default/web/url/use_store 1
+     * @magentoConfigFixture fixture_second_store_store web/url/use_store 1
+     */
+    public function testGetFrontendLinkUsesDefaultStoreOfWebsiteFromRequest()
+    {
+        $website = $this->_objectManager->get(StoreManagerInterface::class)->getWebsite('test');
+        $this->getRequest()->setParam('website', (string)$website->getId());
+
+        $link = $this->getLinkBlock()->getFrontendLink();
+        $this->assertStringContainsString('/fixture_second_store/checkouttester/index/success', $link);
+    }
+
     public function testGetFrontendLinkWithoutOrderIdHasNoToken()
     {
         $this->getRequest()->setParam('store', 'default');
@@ -108,6 +154,12 @@ class ConfigSectionTest extends AbstractBackendController
         $config->setSection('checkouttester2');
         $config->setGroups(['settings' => ['fields' => $fields]]);
         $config->save();
+    }
+
+    private function assertDefaultStoreLink(string $link): void
+    {
+        $this->assertStringContainsString('/default/checkouttester/index/success', $link);
+        $this->assertStringNotContainsString('/admin/', $link);
     }
 
     private function getLinkBlock(): Link
