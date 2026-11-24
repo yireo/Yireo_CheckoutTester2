@@ -83,19 +83,18 @@ class Link extends Field
     {
         $store = $this->getStore();
         $storeId = (int)$store->getId();
-        $params = [];
+        $query = ['___store' => $store->getCode()];
 
         $orderId = $this->config->getOrderIdFromConfig($storeId);
         if ($orderId > 0) {
             $expires = time() + self::TOKEN_LIFETIME;
-            $params['_query'] = [
-                'order_id' => $orderId,
-                'expires' => $expires,
-                'token' => $this->orderToken->create($orderId, $storeId, $expires),
-            ];
+            $query['order_id'] = $orderId;
+            $query['expires'] = $expires;
+            $query['token'] = $this->orderToken->create($orderId, $storeId, $expires);
         }
 
-        return $this->urlModel->setScope($store->getCode())->getUrl('checkouttester/index/success', $params);
+        return $this->urlModel->setScope($store->getCode())
+            ->getUrl('checkouttester/index/success', ['_query' => $query]);
     }
 
     /**

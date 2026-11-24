@@ -25,7 +25,7 @@ class ConfigSectionTest extends AbstractBackendController
         $this->assertStringContainsString('checkouttester2_settings_order_id', $body);
         $this->assertStringContainsString('class="yireo-funding"', $body);
         $this->assertStringContainsString('Open success page in new window', $body);
-        $this->assertMatchesRegularExpression('#href="[^"]+checkouttester/index/success/?"#', $body);
+        $this->assertMatchesRegularExpression('#href="[^"]+checkouttester/index/success/?\?___store=default"#', $body);
     }
 
     public function testIpSettingsAreOnlyShownInDefaultScope()
@@ -87,6 +87,7 @@ class ConfigSectionTest extends AbstractBackendController
 
         $link = $this->getLinkBlock()->getFrontendLink();
         $this->assertStringContainsString('/fixture_second_store/checkouttester/index/success', $link);
+        $this->assertSame('fixture_second_store', $this->getQuery($link)['___store'] ?? null);
     }
 
     /**
@@ -142,6 +143,7 @@ class ConfigSectionTest extends AbstractBackendController
         $link = $this->getLinkBlock()->getFrontendLink();
         $this->assertStringNotContainsString('order_id', $link);
         $this->assertStringNotContainsString('token', $link);
+        $this->assertSame('default', $this->getQuery($link)['___store'] ?? null);
     }
 
     /**
@@ -155,6 +157,7 @@ class ConfigSectionTest extends AbstractBackendController
         $query = [];
         parse_str((string)parse_url($link, PHP_URL_QUERY), $query);
 
+        $this->assertSame('default', $query['___store'] ?? null);
         $this->assertSame('42', $query['order_id'] ?? null);
         $this->assertGreaterThan(time(), (int)($query['expires'] ?? 0));
         $this->assertTrue($this->_objectManager->get(OrderToken::class)->isValid(
@@ -187,8 +190,17 @@ class ConfigSectionTest extends AbstractBackendController
         $config->save();
     }
 
+    private function getQuery(string $link): array
+    {
+        $query = [];
+        parse_str((string)parse_url($link, PHP_URL_QUERY), $query);
+
+        return $query;
+    }
+
     private function assertDefaultStoreLink(string $link): void
     {
+        $this->assertSame('default', $this->getQuery($link)['___store'] ?? null);
         $this->assertStringContainsString('/default/checkouttester/index/success', $link);
         $this->assertStringNotContainsString('/admin/', $link);
     }
