@@ -2,6 +2,7 @@ import {
     test,
     expect,
     configure,
+    getSignedOrderParams,
     placeGuestOrders,
     openSuccessPage,
     expectSuccessPage,
@@ -27,11 +28,36 @@ export function defineCheckoutTesterTests(theme: string) {
         await expectSuccessPage(page, response, latestOrder.incrementId);
     });
 
-    test('shows the order given in the URL', async function ({page}) {
+    test('falls back to the latest order when the URL has no token', async function ({page}) {
         await configure(page, theme);
         const response = await openSuccessPage(page, {order_id: firstOrder.entityId});
-        await expectSuccessPage(page, response, firstOrder.incrementId);
-        await expect(page.locator('body')).not.toContainText(latestOrder.incrementId);
+        await expectSuccessPage(page, response, latestOrder.incrementId);
+        await expect(page.locator('body')).not.toContainText(firstOrder.incrementId);
+    });
+
+    test.describe('signed order links', function () {
+        test('shows the order given in the URL with a valid token', async function ({page}) {
+            const params = await getSignedOrderParams(page, theme, firstOrder);
+            const response = await openSuccessPage(page, params);
+            await expectSuccessPage(page, response, firstOrder.incrementId);
+            await expect(page.locator('body')).not.toContainText(latestOrder.incrementId);
+        });
+
+        test('falls back to the latest order with a tampered token', async function ({page}) {
+            const params = await getSignedOrderParams(page, theme, firstOrder);
+            const token = (params.token[0] === '0' ? '1' : '0') + params.token.slice(1);
+            const response = await openSuccessPage(page, {...params, token});
+            await expectSuccessPage(page, response, latestOrder.incrementId);
+            await expect(page.locator('body')).not.toContainText(firstOrder.incrementId);
+        });
+
+        test('falls back to the latest order for a URL with a past expiry', async function ({page}) {
+            const params = await getSignedOrderParams(page, theme, firstOrder);
+            const expires = String(Math.floor(Date.now() / 1000) - 60);
+            const response = await openSuccessPage(page, {...params, expires});
+            await expectSuccessPage(page, response, latestOrder.incrementId);
+            await expect(page.locator('body')).not.toContainText(firstOrder.incrementId);
+        });
     });
 
     test('shows the order given in the configuration', async function ({page}) {
@@ -71,10 +97,18 @@ export function defineCheckoutTesterTests(theme: string) {
         await expectBlocked(page, response);
     });
 
-    test('allows access for every IP address with a wildcard', async function ({page}) {
-        await configure(page, theme, {'checkouttester2/settings/ip': '10.0.0.1, *'});
-        const response = await openSuccessPage(page);
-        await expectSuccessPage(page, response, latestOrder.incrementId);
+    test('only honors a wildcard allowlist in developer mode', async function ({page}) {
+        await configure(page, theme, {'checkouttester2/settings/ip': '*'});
+        try {
+            const response = await openSuccessPage(page);
+            if (process.env.CHECKOUTTESTER_DEVELOPER_MODE === '1') {
+                await expectSuccessPage(page, response, latestOrder.incrementId);
+            } else {
+                await expectBlocked(page, response);
+            }
+        } finally {
+            await configure(page, theme);
+        }
     });
 
     test('blocks access for an IP address that is not whitelisted', async function ({page}) {

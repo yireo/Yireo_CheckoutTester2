@@ -1,4 +1,5 @@
 import {test, expect, Browser, Page, Response} from '@playwright/test';
+import {createConnection, isIP} from 'node:net';
 
 export {test, expect};
 
@@ -28,12 +29,33 @@ export type PlacedOrder = {
 
 const token = () => process.env.TEST_TOKEN;
 
-/**
- * Configure the theme and the CheckoutTester settings
- *
- * Developer mode is not required, because CI runs in default mode. The Loki_FunctionalTests configure endpoint
- * resets the theme to Magento/luma when `theme` is missing, so the theme is passed with every call.
- */
+async function clientIp(): Promise<string> {
+    const configuredIp = process.env.CHECKOUTTESTER_CLIENT_IP;
+    if (configuredIp) {
+        expect(isIP(configuredIp), 'CHECKOUTTESTER_CLIENT_IP must be a single IP address').not.toBe(0);
+        return configuredIp;
+    }
+
+    const url = new URL(process.env.TEST_URL!);
+    return new Promise((resolve, reject) => {
+        const socket = createConnection({
+            host: url.hostname.replace(/^\[|\]$/g, ''),
+            port: Number(url.port || (url.protocol === 'https:' ? 443 : 80)),
+        });
+        socket.once('error', reject);
+        socket.setTimeout(5000, () => socket.destroy(new Error('Could not determine the Playwright client IP')));
+        socket.once('connect', () => {
+            const address = socket.localAddress;
+            socket.destroy();
+            if (address) {
+                resolve(address);
+            } else {
+                reject(new Error('The Magento connection has no local IP address'));
+            }
+        });
+    });
+}
+
 export async function configure(page: Page, theme: string, settings: Record<string, string | number> = {}) {
     const response = await page.request.post('/loki_functional_tests/index/configure?token=' + token(), {
         form: {
@@ -46,7 +68,8 @@ export async function configure(page: Page, theme: string, settings: Record<stri
                     'checkouttester2/settings/enabled': 1,
                     'checkouttester2/settings/only_in_dev_mode': 0,
                     'checkouttester2/settings/order_id': 0,
-                    'checkouttester2/settings/ip': '*',
+                    'checkouttester2/settings/ip': settings['checkouttester2/settings/ip'] ?? await clientIp(),
+                    'checkouttester2/settings/trusted_proxies': '',
                     ...settings,
                 },
             }),
@@ -68,6 +91,40 @@ export async function configure(page: Page, theme: string, settings: Record<stri
     const themeErrors: string[] = data.result?.theme?.errors ?? [];
     test.skip(themeErrors.some(error => error.includes('not found')), `Theme "${theme}" is not installed`);
     expect(themeErrors, 'Configure theme errors').toEqual([]);
+}
+
+async function followAdminLink(page: Page, link: ReturnType<Page['locator']>) {
+    const href = await link.getAttribute('href', {timeout: 10000});
+    expect(href, 'Admin navigation link').toBeTruthy();
+    await page.goto(new URL(href!, page.url()).href, {timeout: 15000});
+}
+
+export async function getSignedOrderParams(page: Page, theme: string, order: PlacedOrder) {
+    await configure(page, theme, {'checkouttester2/settings/order_id': order.entityId});
+
+    try {
+        await page.goto('/' + (process.env.MAGENTO_BACKEND_FRONTNAME || 'admin'), {timeout: 15000});
+        await page.locator('#username').fill(process.env.MAGENTO_ADMIN_USER || 'admin@loki-checkout.com', {timeout: 10000});
+        await page.locator('#login').fill(process.env.MAGENTO_ADMIN_PASSWORD || 'P@ssw0rd1234', {timeout: 10000});
+        await page.getByRole('button', {name: 'Sign in', exact: true}).click({timeout: 10000});
+        await followAdminLink(page, page.locator('#menu-magento-backend-stores a').filter({hasText: /^Configuration$/}));
+        await followAdminLink(page, page.locator('.config-nav a').filter({hasText: /^\s*Yireo CheckoutTester\s*$/}));
+
+        const href = await page.getByRole('link', {name: 'Open success page in new window'})
+            .getAttribute('href', {timeout: 10000});
+        expect(href, 'Admin-generated success link').toBeTruthy();
+        const params = new URL(href!, page.url()).searchParams;
+        const orderId = params.get('order_id');
+        const expires = params.get('expires');
+        const signature = params.get('token');
+        expect(orderId).toBe(order.entityId);
+        expect(Number(expires)).toBeGreaterThan(Date.now() / 1000);
+        expect(signature).toBeTruthy();
+
+        return {order_id: orderId!, expires: expires!, token: signature!};
+    } finally {
+        await configure(page, theme);
+    }
 }
 
 async function rest(page: Page, path: string, data?: Record<string, any>) {
