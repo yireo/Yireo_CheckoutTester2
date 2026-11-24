@@ -45,6 +45,7 @@ class GetOrderTest extends TestCase
         $target = $this->getTarget();
         $this->assertSame('100000002', $target->get()->getIncrementId());
         $this->assertSame(GetOrder::SOURCE_URL, $target->getSource());
+        $this->assertTrue($target->isTrustedSource());
     }
 
     /**
@@ -59,6 +60,7 @@ class GetOrderTest extends TestCase
         $target = $this->getTarget();
         $this->assertSame('100000004', $target->get()->getIncrementId());
         $this->assertSame(GetOrder::SOURCE_CONFIG, $target->getSource());
+        $this->assertFalse($target->isTrustedSource());
     }
 
     /**
@@ -77,6 +79,7 @@ class GetOrderTest extends TestCase
         $target = $this->getTarget();
         $this->assertSame('100000002', $target->get()->getIncrementId());
         $this->assertSame(GetOrder::SOURCE_LATEST, $target->getSource());
+        $this->assertFalse($target->isTrustedSource());
     }
 
     /**
@@ -125,6 +128,7 @@ class GetOrderTest extends TestCase
         $target = $this->getTarget();
         $this->assertSame('100000002', $target->get()->getIncrementId());
         $this->assertSame(GetOrder::SOURCE_LATEST, $target->getSource());
+        $this->assertTrue($target->isTrustedSource());
     }
 
     /**
@@ -162,6 +166,7 @@ class GetOrderTest extends TestCase
         $order = $target->get();
         $this->assertEmpty($order->getEntityId());
         $this->assertSame(GetOrder::SOURCE_NONE, $target->getSource());
+        $this->assertFalse($target->isTrustedSource());
     }
 
     private function getTarget(): GetOrder
