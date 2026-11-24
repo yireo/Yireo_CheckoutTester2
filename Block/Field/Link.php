@@ -14,9 +14,14 @@ use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Url;
+use Magento\Store\Api\Data\StoreInterface;
+use Yireo\CheckoutTester2\Config\Config;
+use Yireo\CheckoutTester2\Utility\OrderToken;
 
 class Link extends Field
 {
+    public const TOKEN_LIFETIME = 3600;
+
     /**
      * Note: This model is needed and not $_urlBuilder() or $_storeManager->getUrl() because of issue 5322
      *
@@ -24,19 +29,28 @@ class Link extends Field
      */
     protected $urlModel;
 
+    private Config $config;
+    private OrderToken $orderToken;
+
     /**
      * Link constructor.
      *
      * @param Url $urlModel
      * @param Context $context
+     * @param Config $config
+     * @param OrderToken $orderToken
      * @param array $data
      */
     public function __construct(
         Url $urlModel,
         Context $context,
+        Config $config,
+        OrderToken $orderToken,
         array $data = []
     ) {
         $this->urlModel = $urlModel;
+        $this->config = $config;
+        $this->orderToken = $orderToken;
         parent::__construct($context, $data);
     }
 
@@ -66,25 +80,36 @@ class Link extends Field
      */
     public function getFrontendLink(): string
     {
-        $storeId = $this->getStoreId();
-        $url = $this->urlModel->setScope($storeId)->getUrl('checkouttester/index/success');
+        $store = $this->getStore();
+        $storeId = (int)$store->getId();
+        $params = [];
 
-        return $url;
+        $orderId = $this->config->getOrderIdFromConfig($storeId);
+        if ($orderId > 0) {
+            $expires = time() + self::TOKEN_LIFETIME;
+            $params['_query'] = [
+                'order_id' => $orderId,
+                'expires' => $expires,
+                'token' => $this->orderToken->create($orderId, $storeId, $expires),
+            ];
+        }
+
+        return $this->urlModel->setScope($store->getCode())->getUrl('checkouttester/index/success', $params);
     }
 
     /**
-     * Return store id of current configuration scope
+     * Return store of current configuration scope
      *
-     * @return string
+     * @return StoreInterface
      * @throws NoSuchEntityException
      */
-    protected function getStoreId(): string
+    protected function getStore(): StoreInterface
     {
         $storeId = $this->_request->getParam('store');
         if (is_string($storeId) && $storeId !== '') {
-            return (string)$this->_storeManager->getStore($storeId)->getCode();
+            return $this->_storeManager->getStore($storeId);
         }
 
-        return (string)$this->_storeManager->getStore()->getCode();
+        return $this->_storeManager->getStore();
     }
 }

@@ -39,9 +39,16 @@ point your browser to the preview URL and voila, there's your success page:
 
     http://MAGENTO2/checkouttester/index/success
 
-You can also test a specific order with the following:
+By default, the order configured with the setting **Sales Order ID** is shown, or if that is empty, the latest order of
+the current store view.
 
-    http://MAGENTO2/checkouttester/index/success/order_id/1234
+You can also test a specific order via the URL, but only with a signed token that expires:
+
+    http://MAGENTO2/checkouttester/index/success?order_id=1234&expires=1767225600&token=abcdef...
+
+The `token` is an HMAC-SHA256 signature (using the Magento encryption key) of `order_id|store_id|expires`. The link
+**Usage** in the configuration of this module generates such a URL (valid for one hour) for the configured **Sales
+Order ID**. An `order_id` without a valid token is ignored.
 
 ### Access
 The success page shows real order data, so access is restricted with the setting **Development IP**:

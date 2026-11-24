@@ -67,11 +67,12 @@ class Config
     /**
      * Return the order ID
      *
+     * @param int|null $storeId
      * @return int
      */
-    public function getOrderIdFromConfig(): int
+    public function getOrderIdFromConfig(?int $storeId = null): int
     {
-        return (int)$this->getConfigValue('order_id');
+        return (int)$this->getConfigValue('order_id', null, true, $storeId);
     }
 
     /**
@@ -90,10 +91,11 @@ class Config
      * @param string $key
      * @param mixed $defaultValue
      * @param bool $prefix
+     * @param int|null $storeId
      *
      * @return mixed
      */
-    public function getConfigValue(string $key = '', $defaultValue = null, $prefix = true)
+    public function getConfigValue(string $key = '', $defaultValue = null, $prefix = true, ?int $storeId = null)
     {
         if ($prefix) {
             $key = 'checkouttester2/settings/' . $key;
@@ -101,7 +103,8 @@ class Config
 
         $value = $this->scopeConfig->getValue(
             $key,
-            ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE,
+            $storeId
         );
 
         if (empty($value)) {

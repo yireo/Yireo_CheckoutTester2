@@ -14,8 +14,10 @@ use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Registry;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\TestCase\AbstractController as ControllerTestCase;
 use Laminas\Stdlib\Parameters;
+use Yireo\CheckoutTester2\Utility\OrderToken;
 
 class BrowseTest extends ControllerTestCase
 {
@@ -99,7 +101,11 @@ class BrowseTest extends ControllerTestCase
     public function testIfPageShowsOrderFromUrl()
     {
         $order = $this->getFixtureOrder();
-        $this->dispatch('/checkouttester/index/success/order_id/' . $order->getEntityId());
+        $orderId = (int)$order->getEntityId();
+        $storeId = (int)$this->_objectManager->get(StoreManagerInterface::class)->getStore()->getId();
+        $expires = time() + 3600;
+        $token = $this->_objectManager->get(OrderToken::class)->create($orderId, $storeId, $expires);
+        $this->dispatch('/checkouttester/index/success/order_id/' . $orderId . '/expires/' . $expires . '/token/' . $token);
 
         $body = (string)$this->getResponse()->getBody();
         $this->assertStringContainsString('Thank you for your purchase!', $body);

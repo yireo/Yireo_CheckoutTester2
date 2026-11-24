@@ -8,9 +8,11 @@ use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 use Yireo\CheckoutTester2\Utility\GetOrder;
+use Yireo\CheckoutTester2\Utility\OrderToken;
 
 /**
  * @magentoAppArea frontend
@@ -22,22 +24,80 @@ class GetOrderTest extends TestCase
     protected function setUp(): void
     {
         $this->objectManager = Bootstrap::getObjectManager();
+        $this->resetRequestParams();
     }
 
     protected function tearDown(): void
     {
-        $this->getRequest()->setParams([]);
+        $this->resetRequestParams();
         $this->setOrderIdInConfig(0);
     }
 
     /**
      * @magentoDataFixture Magento/Sales/_files/order_list.php
      */
-    public function testGetReturnsOrderFromUrl()
+    public function testGetReturnsOrderFromUrlWithValidToken()
     {
         $this->setCreatedAtOfOrders();
         $this->setOrderIdInConfig($this->getOrderId('100000003'));
-        $this->getRequest()->setParam('order_id', $this->getOrderId('100000002'));
+        $this->setSignedOrderIdInRequest($this->getOrderId('100000002'));
+
+        $target = $this->getTarget();
+        $this->assertSame('100000002', $target->get()->getIncrementId());
+        $this->assertSame(GetOrder::SOURCE_URL, $target->getSource());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order_list.php
+     */
+    public function testGetIgnoresOrderFromUrlWithoutToken()
+    {
+        $this->setCreatedAtOfOrders();
+        $this->setOrderIdInConfig($this->getOrderId('100000004'));
+        $this->getRequest()->setParam('order_id', $this->getOrderId('100000001'));
+
+        $target = $this->getTarget();
+        $this->assertSame('100000004', $target->get()->getIncrementId());
+        $this->assertSame(GetOrder::SOURCE_CONFIG, $target->getSource());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order_list.php
+     */
+    public function testGetIgnoresOrderFromUrlWithInvalidToken()
+    {
+        $this->setCreatedAtOfOrders();
+        $orderId = $this->getOrderId('100000001');
+        $this->getRequest()->setParams([
+            'order_id' => $orderId,
+            'expires' => time() + 3600,
+            'token' => 'foobar',
+        ]);
+
+        $target = $this->getTarget();
+        $this->assertSame('100000002', $target->get()->getIncrementId());
+        $this->assertSame(GetOrder::SOURCE_LATEST, $target->getSource());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order_list.php
+     */
+    public function testGetIgnoresOrderFromUrlWithExpiredToken()
+    {
+        $this->setCreatedAtOfOrders();
+        $this->setSignedOrderIdInRequest($this->getOrderId('100000001'), time() - 1);
+
+        $this->assertSame('100000002', $this->getTarget()->get()->getIncrementId());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order_list.php
+     */
+    public function testGetIgnoresOrderFromUrlWithTokenOfOtherOrder()
+    {
+        $this->setCreatedAtOfOrders();
+        $this->setSignedOrderIdInRequest($this->getOrderId('100000004'));
+        $this->getRequest()->setParam('order_id', $this->getOrderId('100000001'));
 
         $this->assertSame('100000002', $this->getTarget()->get()->getIncrementId());
     }
@@ -62,7 +122,9 @@ class GetOrderTest extends TestCase
         $this->setCreatedAtOfOrders();
         $this->setOrderIdInConfig(999999999);
 
-        $this->assertSame('100000002', $this->getTarget()->get()->getIncrementId());
+        $target = $this->getTarget();
+        $this->assertSame('100000002', $target->get()->getIncrementId());
+        $this->assertSame(GetOrder::SOURCE_LATEST, $target->getSource());
     }
 
     /**
@@ -81,7 +143,7 @@ class GetOrderTest extends TestCase
     public function testGetSkipsOrdersOfOtherStores()
     {
         $this->setCreatedAtOfOrders();
-        $this->getRequest()->setParam('order_id', $this->getOrderId('100000003'));
+        $this->setSignedOrderIdInRequest($this->getOrderId('100000003'));
 
         $this->assertSame('100000002', $this->getTarget()->get()->getIncrementId());
     }
@@ -96,8 +158,10 @@ class GetOrderTest extends TestCase
         );
 
         $this->getRequest()->setParam('order_id', 999999999);
-        $order = $this->getTarget()->get();
+        $target = $this->getTarget();
+        $order = $target->get();
         $this->assertEmpty($order->getEntityId());
+        $this->assertSame(GetOrder::SOURCE_NONE, $target->getSource());
     }
 
     private function getTarget(): GetOrder
@@ -108,6 +172,22 @@ class GetOrderTest extends TestCase
     private function getRequest(): RequestInterface
     {
         return $this->objectManager->get(RequestInterface::class);
+    }
+
+    private function resetRequestParams(): void
+    {
+        $this->getRequest()->setParams(['order_id' => null, 'expires' => null, 'token' => null]);
+    }
+
+    private function setSignedOrderIdInRequest(int $orderId, ?int $expires = null): void
+    {
+        $expires = $expires ?? time() + 3600;
+        $storeId = (int)$this->objectManager->get(StoreManagerInterface::class)->getStore()->getId();
+        $this->getRequest()->setParams([
+            'order_id' => $orderId,
+            'expires' => $expires,
+            'token' => $this->objectManager->get(OrderToken::class)->create($orderId, $storeId, $expires),
+        ]);
     }
 
     private function setOrderIdInConfig(int $orderId): void
