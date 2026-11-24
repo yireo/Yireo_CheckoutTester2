@@ -33,7 +33,7 @@ class Access
             return $this->config->isDeveloperMode();
         }
 
-        if (in_array(self::ALLOW_ALL, $allowedIps, true)) {
+        if (in_array(self::ALLOW_ALL, $allowedIps, true) && $this->config->isDeveloperMode()) {
             return true;
         }
 
