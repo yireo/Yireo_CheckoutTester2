@@ -51,7 +51,8 @@ The `token` is an HMAC-SHA256 signature (using the Magento encryption key) of `o
 Order ID**. An `order_id` without a valid token is ignored.
 
 ### Access
-The success page shows real order data, so access is restricted with the setting **Development IP**:
+The success page shows real order data, so access is restricted with the setting **Development IP** (which, like
+**Trusted Proxies**, can only be configured in the default scope):
 
 - A comma-separated list of IP addresses only allows those addresses;
 - `*` allows every IP address, but only in developer mode. In other modes, `*` is ignored. Saving `*` in the

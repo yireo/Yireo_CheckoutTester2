@@ -72,7 +72,7 @@ class BrowseTest extends ControllerTestCase
     /**
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture current_store checkouttester2/settings/enabled 1
-     * @magentoConfigFixture current_store checkouttester2/settings/ip 1.1.1.1
+     * @magentoConfigFixture default/checkouttester2/settings/ip 1.1.1.1
      */
     public function testIfPageFailsWithWrongIpSettings()
     {
@@ -84,7 +84,7 @@ class BrowseTest extends ControllerTestCase
     /**
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture current_store checkouttester2/settings/enabled 1
-     * @magentoConfigFixture current_store checkouttester2/settings/ip 1.1.1.1
+     * @magentoConfigFixture default/checkouttester2/settings/ip 1.1.1.1
      */
     public function testIfPageFailsWithSpoofedProxyHeaders()
     {
@@ -101,7 +101,7 @@ class BrowseTest extends ControllerTestCase
     /**
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture current_store checkouttester2/settings/enabled 1
-     * @magentoConfigFixture current_store checkouttester2/settings/ip 1.1.1.1
+     * @magentoConfigFixture default/checkouttester2/settings/ip 1.1.1.1
      */
     public function testIfPageWorksWithCorrectIpSettings()
     {

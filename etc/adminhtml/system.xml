@@ -39,7 +39,7 @@
                     </depends>
                     <comment><![CDATA[Numerical ID of sales-order entity. If zero, the latest order of the current store view is picked. Orders of other store views are never shown.]]></comment>
                 </field>
-                <field id="ip" translate="label comment" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="ip" translate="label comment" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Development IP</label>
                     <depends>
                         <field id="checkouttester2/settings/enabled">1</field>
@@ -47,7 +47,7 @@
                     <backend_model>Yireo\CheckoutTester2\Config\Backend\IpList</backend_model>
                     <comment><![CDATA[CSV-list of IP-addresses allowed access. Use * to allow all IPs, but only in developer mode (and only when "Only in Developer Mode" is enabled). If empty, only local and private IPs (like 127.0.0.1, 10.x.x.x, 172.16.x.x and 192.168.x.x) are allowed, and in developer mode only. The IP of the connection is used, unless it comes from a trusted proxy.]]></comment>
                 </field>
-                <field id="trusted_proxies" translate="label" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="trusted_proxies" translate="label" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Trusted Proxies</label>
                     <depends>
                         <field id="checkouttester2/settings/enabled">1</field>

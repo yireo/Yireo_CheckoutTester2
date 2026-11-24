@@ -44,11 +44,11 @@ trait ScopeConfigMock
     /**
      * @param string $name
      * @param $value
+     * @param string $scope
      * @return void
      */
-    protected function setScopeConfigValue(string $name, $value): void
+    protected function setScopeConfigValue(string $name, $value, string $scope = 'store'): void
     {
-        $scope = 'store';
-        $this->scopeConfigValues[$name] = [$name, $scope, null, $value];
+        $this->scopeConfigValues[$scope . '/' . $name] = [$name, $scope, null, $value];
     }
 }

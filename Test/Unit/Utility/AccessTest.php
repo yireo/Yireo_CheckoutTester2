@@ -49,7 +49,7 @@ class AccessTest extends TestCase
 
     public function testHasNoAccessWithWhitespaceAsConfiguredIpAddressOutsideDeveloperMode()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', ' , ');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', ' , ', 'default');
         $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '127.0.0.1'], State::MODE_PRODUCTION)->hasAccess());
         $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'])->hasAccess());
         $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '127.0.0.1'])->hasAccess());
@@ -57,13 +57,13 @@ class AccessTest extends TestCase
 
     public function testHasAccessWithWildcardInDeveloperMode()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1, *');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1, *', 'default');
         $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'])->hasAccess());
     }
 
     public function testHasNoAccessWithWildcardOutsideDeveloperMode()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1, *');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1, *', 'default');
         $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'], State::MODE_PRODUCTION)->hasAccess());
         $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'], State::MODE_DEFAULT)->hasAccess());
         $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '10.0.0.1'], State::MODE_PRODUCTION)->hasAccess());
@@ -71,44 +71,44 @@ class AccessTest extends TestCase
 
     public function testHasAccessWithMatchingIpAddress()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4', 'default');
         $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'], State::MODE_PRODUCTION)->hasAccess());
     }
 
     public function testHasAccessWithMatchingIpAddressInList()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1, ,1.2.3.4 ,');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1, ,1.2.3.4 ,', 'default');
         $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'])->hasAccess());
         $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '10.0.0.1'])->hasAccess());
     }
 
     public function testHasAccessWithDifferentlyNotatedIpv6Address()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '2001:DB8:0:0:0:0:0:1');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '2001:DB8:0:0:0:0:0:1', 'default');
         $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '2001:db8::1'])->hasAccess());
     }
 
     public function testHasNoAccessWithOtherIpAddress()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1,1.2.3.4');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1,1.2.3.4', 'default');
         $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.5'])->hasAccess());
     }
 
     public function testHasNoAccessWithEmptyClientIpAddress()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4', 'default');
         $this->assertFalse($this->getTargetObject([])->hasAccess());
     }
 
     public function testHasNoAccessWithInvalidConfiguredIpAddress()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', 'foobar');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', 'foobar', 'default');
         $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'])->hasAccess());
     }
 
     public function testHasNoAccessWithSpoofedClientIpHeader()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4', 'default');
         $target = $this->getTargetObject(['REMOTE_ADDR' => '6.6.6.6', 'HTTP_CLIENT_IP' => '1.2.3.4']);
         $this->assertFalse($target->hasAccess());
         $this->assertSame('6.6.6.6', $target->getCurrentIpAddress());
@@ -116,15 +116,15 @@ class AccessTest extends TestCase
 
     public function testHasNoAccessWithSpoofedForwardedForHeader()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4', 'default');
         $target = $this->getTargetObject(['REMOTE_ADDR' => '6.6.6.6', 'HTTP_X_FORWARDED_FOR' => '1.2.3.4, 6.6.6.6']);
         $this->assertFalse($target->hasAccess());
     }
 
     public function testHasAccessWithForwardedForHeaderFromTrustedProxy()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4');
-        $this->setScopeConfigValue('checkouttester2/settings/trusted_proxies', '10.0.0.1, 10.0.0.2');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4', 'default');
+        $this->setScopeConfigValue('checkouttester2/settings/trusted_proxies', '10.0.0.1, 10.0.0.2', 'default');
         $target = $this->getTargetObject(
             ['REMOTE_ADDR' => '10.0.0.1', 'HTTP_X_FORWARDED_FOR' => '1.2.3.4, 10.0.0.2'],
             State::MODE_PRODUCTION
@@ -135,8 +135,8 @@ class AccessTest extends TestCase
 
     public function testHasNoAccessWithSpoofedForwardedForHeaderBehindTrustedProxy()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4');
-        $this->setScopeConfigValue('checkouttester2/settings/trusted_proxies', '10.0.0.1');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4', 'default');
+        $this->setScopeConfigValue('checkouttester2/settings/trusted_proxies', '10.0.0.1', 'default');
         $target = $this->getTargetObject(
             ['REMOTE_ADDR' => '10.0.0.1', 'HTTP_X_FORWARDED_FOR' => '1.2.3.4, 6.6.6.6'],
             State::MODE_PRODUCTION
@@ -147,8 +147,8 @@ class AccessTest extends TestCase
 
     public function testHasNoAccessWithInvalidForwardedForHeaderBehindTrustedProxy()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4');
-        $this->setScopeConfigValue('checkouttester2/settings/trusted_proxies', '10.0.0.1');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '1.2.3.4', 'default');
+        $this->setScopeConfigValue('checkouttester2/settings/trusted_proxies', '10.0.0.1', 'default');
         $target = $this->getTargetObject(
             ['REMOTE_ADDR' => '10.0.0.1', 'HTTP_X_FORWARDED_FOR' => '1.2.3.4, foobar'],
             State::MODE_PRODUCTION
@@ -158,8 +158,8 @@ class AccessTest extends TestCase
 
     public function testTrustedProxyIsNotUsedAsClientIpAddress()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1');
-        $this->setScopeConfigValue('checkouttester2/settings/trusted_proxies', '10.0.0.1, 10.0.0.2');
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1', 'default');
+        $this->setScopeConfigValue('checkouttester2/settings/trusted_proxies', '10.0.0.1, 10.0.0.2', 'default');
 
         $target = $this->getTargetObject(['REMOTE_ADDR' => '10.0.0.1'], State::MODE_PRODUCTION);
         $this->assertSame('', $target->getCurrentIpAddress());
