@@ -13,23 +13,46 @@ class AccessTest extends TestCase
 {
     use ScopeConfigMock;
 
-    public function testHasAccessWithoutConfiguredIpAddressInDeveloperMode()
+    public function testHasAccessWithoutConfiguredIpAddressInDeveloperModeFromLocalIpAddress()
     {
-        $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'])->hasAccess());
-        $this->assertTrue($this->getTargetObject([])->hasAccess());
+        $localIps = [
+            '127.0.0.1',
+            '127.1.2.3',
+            '::1',
+            '10.0.0.1',
+            '172.16.0.1',
+            '192.168.1.1',
+            '169.254.1.1',
+            'fc00::1',
+            'fe80::1',
+            '::ffff:192.168.1.1',
+        ];
+        foreach ($localIps as $ip) {
+            $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => $ip])->hasAccess(), $ip);
+        }
+    }
+
+    public function testHasNoAccessWithoutConfiguredIpAddressInDeveloperModeFromPublicIpAddress()
+    {
+        foreach (['1.2.3.4', '8.8.8.8', '2a00:1450::1', '::ffff:8.8.8.8'] as $ip) {
+            $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => $ip])->hasAccess(), $ip);
+        }
+
+        $this->assertFalse($this->getTargetObject([])->hasAccess());
     }
 
     public function testHasNoAccessWithoutConfiguredIpAddressOutsideDeveloperMode()
     {
-        $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'], State::MODE_PRODUCTION)->hasAccess());
-        $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'], State::MODE_DEFAULT)->hasAccess());
+        $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '127.0.0.1'], State::MODE_PRODUCTION)->hasAccess());
+        $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '127.0.0.1'], State::MODE_DEFAULT)->hasAccess());
     }
 
     public function testHasNoAccessWithWhitespaceAsConfiguredIpAddressOutsideDeveloperMode()
     {
         $this->setScopeConfigValue('checkouttester2/settings/ip', ' , ');
-        $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'], State::MODE_PRODUCTION)->hasAccess());
-        $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'])->hasAccess());
+        $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '127.0.0.1'], State::MODE_PRODUCTION)->hasAccess());
+        $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'])->hasAccess());
+        $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '127.0.0.1'])->hasAccess());
     }
 
     public function testHasAccessWithWildcardInDeveloperMode()

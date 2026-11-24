@@ -30,7 +30,7 @@ class Access
     {
         $allowedIps = $this->splitList($this->config->getIpAddress());
         if (empty($allowedIps)) {
-            return $this->config->isDeveloperMode();
+            return $this->config->isDeveloperMode() && $this->isLocalIpAddress($this->getCurrentIpAddress());
         }
 
         if (in_array(self::ALLOW_ALL, $allowedIps, true) && $this->config->isDeveloperMode()) {
@@ -83,6 +83,30 @@ class Access
         }
 
         return $remoteIp;
+    }
+
+    /**
+     * Check whether an IP address is a loopback, private or reserved address
+     *
+     * @param string $ip
+     * @return bool
+     */
+    private function isLocalIpAddress(string $ip): bool
+    {
+        if ($ip === '') {
+            return false;
+        }
+
+        if (stripos($ip, '::ffff:') === 0 && filter_var(substr($ip, 7), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            $ip = substr($ip, 7);
+        }
+
+        if ($ip === '::1' || str_starts_with($ip, '127.')) {
+            return true;
+        }
+
+        $flags = FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE;
+        return filter_var($ip, FILTER_VALIDATE_IP, $flags) === false;
     }
 
     /**
