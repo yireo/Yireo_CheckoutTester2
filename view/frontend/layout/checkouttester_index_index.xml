@@ -17,5 +17,9 @@
     </head>
     <body>
         <attribute name="class" value="checkout-onepage-success"/>
+        <referenceBlock name="checkout.registration" remove="true"/>
+        <referenceContainer name="content">
+            <block class="Magento\Framework\View\Element\Text" name="checkouttester2.nocache" cacheable="false"/>
+        </referenceContainer>
     </body>
 </page>

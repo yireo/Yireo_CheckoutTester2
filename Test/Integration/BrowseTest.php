@@ -12,6 +12,7 @@ namespace Yireo\CheckoutTester2\Test\Integration;
 
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Registry;
+use Magento\Framework\View\LayoutInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\StoreManagerInterface;
@@ -175,6 +176,22 @@ class BrowseTest extends ControllerTestCase
         $this->assertStringContainsString('<title>CheckoutTester Success Page</title>', $body);
         $this->assertMatchesRegularExpression('/<meta name="robots" content="NOINDEX,NOFOLLOW"/', $body);
         $this->assertMatchesRegularExpression('/<body[^>]+class="[^"]*checkout-onepage-success/', $body);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     * @magentoConfigFixture current_store checkouttester2/settings/enabled 1
+     */
+    public function testIfPageHasNoRegistrationBlockAndIsNotCacheable()
+    {
+        $this->dispatch('/checkouttester/index/success');
+        $this->assertStringContainsString('Thank you for your purchase!', (string)$this->getResponse()->getBody());
+
+        $layout = $this->_objectManager->get(LayoutInterface::class);
+        $this->assertContains('checkouttester_index_index', $layout->getUpdate()->getHandles());
+        $this->assertFalse($layout->getBlock('checkout.registration'));
+        $this->assertNotFalse($layout->getBlock('checkouttester2.nocache'));
+        $this->assertFalse($layout->isCacheable());
     }
 
     private function setServer(array $server): void
