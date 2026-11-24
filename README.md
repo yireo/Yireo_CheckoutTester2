@@ -54,7 +54,8 @@ Order ID**. An `order_id` without a valid token is ignored.
 The success page shows real order data, so access is restricted with the setting **Development IP**:
 
 - A comma-separated list of IP addresses only allows those addresses;
-- `*` allows every IP address;
+- `*` allows every IP address, but only in developer mode. In other modes, `*` is ignored. Saving `*` in the
+  configuration is only possible when **Only in Developer Mode** is enabled. Invalid IP addresses can not be saved;
 - When empty, every IP address is allowed in developer mode only, and access is denied in other modes.
 
 The IP address is the address of the connection (`REMOTE_ADDR`). Headers like `Client-IP` are ignored. The

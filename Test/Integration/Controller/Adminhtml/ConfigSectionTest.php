@@ -2,7 +2,9 @@
 
 namespace Yireo\CheckoutTester2\Test\Integration\Controller\Adminhtml;
 
+use Magento\Config\Model\Config as ConfigModel;
 use Magento\Framework\Acl\Builder as AclBuilder;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\LayoutInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\TestCase\AbstractBackendController;
@@ -84,6 +86,28 @@ class ConfigSectionTest extends AbstractBackendController
             (int)$query['expires'],
             (string)($query['token'] ?? '')
         ));
+    }
+
+    public function testSavingInvalidIpAddressFails()
+    {
+        $this->expectException(LocalizedException::class);
+        $this->expectExceptionMessage('"foobar" is not a valid IP address.');
+        $this->saveSettings(['ip' => ['value' => '127.0.0.1,foobar']]);
+    }
+
+    public function testSavingWildcardWithoutOnlyInDevModeFails()
+    {
+        $this->expectException(LocalizedException::class);
+        $this->expectExceptionMessage('The wildcard "*" is only allowed');
+        $this->saveSettings(['only_in_dev_mode' => ['value' => '0'], 'ip' => ['value' => '*']]);
+    }
+
+    private function saveSettings(array $fields): void
+    {
+        $config = $this->_objectManager->create(ConfigModel::class);
+        $config->setSection('checkouttester2');
+        $config->setGroups(['settings' => ['fields' => $fields]]);
+        $config->save();
     }
 
     private function getLinkBlock(): Link

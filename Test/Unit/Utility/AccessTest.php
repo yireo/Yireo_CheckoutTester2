@@ -32,10 +32,18 @@ class AccessTest extends TestCase
         $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'])->hasAccess());
     }
 
-    public function testHasAccessWithWildcard()
+    public function testHasAccessWithWildcardInDeveloperMode()
     {
         $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1, *');
-        $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'], State::MODE_PRODUCTION)->hasAccess());
+        $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'])->hasAccess());
+    }
+
+    public function testHasNoAccessWithWildcardOutsideDeveloperMode()
+    {
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1, *');
+        $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'], State::MODE_PRODUCTION)->hasAccess());
+        $this->assertFalse($this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'], State::MODE_DEFAULT)->hasAccess());
+        $this->assertTrue($this->getTargetObject(['REMOTE_ADDR' => '10.0.0.1'], State::MODE_PRODUCTION)->hasAccess());
     }
 
     public function testHasAccessWithMatchingIpAddress()
