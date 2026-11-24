@@ -16,6 +16,11 @@ use Magento\Sales\Api\Data\OrderInterfaceFactory as OrderFactory;
 
 class GetOrder
 {
+    public const SOURCE_NONE = 'none';
+    public const SOURCE_URL = 'url';
+    public const SOURCE_CONFIG = 'config';
+    public const SOURCE_LATEST = 'latest';
+
     private RequestInterface $request;
     private Config $config;
     private OrderFactory $orderFactory;
@@ -23,6 +28,8 @@ class GetOrder
     private SearchCriteriaBuilder $searchCriteriaBuilder;
     private SortOrderBuilder $sortOrderBuilder;
     private StoreManagerInterface $storeManager;
+    private OrderToken $orderToken;
+    private string $source = self::SOURCE_NONE;
 
     public function __construct(
         RequestInterface $request,
@@ -31,7 +38,8 @@ class GetOrder
         OrderRepositoryInterface $orderRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         SortOrderBuilder $sortOrderBuilder,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        OrderToken $orderToken
     ) {
         $this->request = $request;
         $this->config = $config;
@@ -40,6 +48,7 @@ class GetOrder
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->sortOrderBuilder = $sortOrderBuilder;
         $this->storeManager = $storeManager;
+        $this->orderToken = $orderToken;
     }
 
     /**
@@ -49,15 +58,18 @@ class GetOrder
      */
     public function get(): OrderInterface
     {
-        $orderIdFromUrl = (int)$this->request->getParam('order_id');
-        $order = $this->getOrderById($orderIdFromUrl);
+        $this->source = self::SOURCE_NONE;
+
+        $order = $this->getOrderById($this->getOrderIdFromUrl());
         if ($order->getEntityId()) {
+            $this->source = self::SOURCE_URL;
             return $order;
         }
 
         $orderIdFromConfig = $this->config->getOrderIdFromConfig();
         $order = $this->getOrderById($orderIdFromConfig);
         if ($order->getEntityId()) {
+            $this->source = self::SOURCE_CONFIG;
             return $order;
         }
 
@@ -65,10 +77,46 @@ class GetOrder
         $order = $this->getOrderById($lastOrderId);
 
         if ($order->getEntityId()) {
+            $this->source = self::SOURCE_LATEST;
             return $order;
         }
 
         return $this->getEmptyOrder();
+    }
+
+    /**
+     * Return the source of the order that was returned by the last call to get()
+     *
+     * @return string
+     */
+    public function getSource(): string
+    {
+        return $this->source;
+    }
+
+    /**
+     * Return the order ID from the URL, but only when it is signed with a valid token
+     *
+     * @return int
+     */
+    private function getOrderIdFromUrl(): int
+    {
+        $orderId = (int)$this->request->getParam('order_id');
+        if ($orderId < 1) {
+            return 0;
+        }
+
+        $expires = (int)$this->request->getParam('expires');
+        $token = $this->request->getParam('token');
+        if (!is_string($token)) {
+            return 0;
+        }
+
+        if (!$this->orderToken->isValid($orderId, $this->getCurrentStoreId(), $expires, $token)) {
+            return 0;
+        }
+
+        return $orderId;
     }
 
     /**

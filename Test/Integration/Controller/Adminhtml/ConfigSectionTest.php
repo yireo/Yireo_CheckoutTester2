@@ -4,8 +4,10 @@ namespace Yireo\CheckoutTester2\Test\Integration\Controller\Adminhtml;
 
 use Magento\Framework\Acl\Builder as AclBuilder;
 use Magento\Framework\View\LayoutInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\TestCase\AbstractBackendController;
 use Yireo\CheckoutTester2\Block\Field\Link;
+use Yireo\CheckoutTester2\Utility\OrderToken;
 
 /**
  * @magentoAppArea adminhtml
@@ -52,6 +54,36 @@ class ConfigSectionTest extends AbstractBackendController
 
         $link = $this->getLinkBlock()->getFrontendLink();
         $this->assertStringContainsString('/fixture_second_store/checkouttester/index/success', $link);
+    }
+
+    public function testGetFrontendLinkWithoutOrderIdHasNoToken()
+    {
+        $this->getRequest()->setParam('store', 'default');
+
+        $link = $this->getLinkBlock()->getFrontendLink();
+        $this->assertStringNotContainsString('order_id', $link);
+        $this->assertStringNotContainsString('token', $link);
+    }
+
+    /**
+     * @magentoConfigFixture default_store checkouttester2/settings/order_id 42
+     */
+    public function testGetFrontendLinkContainsSignedOrderId()
+    {
+        $this->getRequest()->setParam('store', 'default');
+
+        $link = $this->getLinkBlock()->getFrontendLink();
+        $query = [];
+        parse_str((string)parse_url($link, PHP_URL_QUERY), $query);
+
+        $this->assertSame('42', $query['order_id'] ?? null);
+        $this->assertGreaterThan(time(), (int)($query['expires'] ?? 0));
+        $this->assertTrue($this->_objectManager->get(OrderToken::class)->isValid(
+            42,
+            (int)$this->_objectManager->get(StoreManagerInterface::class)->getStore('default')->getId(),
+            (int)$query['expires'],
+            (string)($query['token'] ?? '')
+        ));
     }
 
     private function getLinkBlock(): Link
