@@ -114,8 +114,14 @@ class GetOrder
      */
     private function getOrderIdFromUrl(): int
     {
-        $orderId = (int)$this->request->getParam('order_id');
+        $rawOrderId = $this->request->getParam('order_id');
+        if ($rawOrderId === null || $rawOrderId === '') {
+            return 0;
+        }
+
+        $orderId = is_scalar($rawOrderId) && ctype_digit((string)$rawOrderId) ? (int)$rawOrderId : 0;
         if ($orderId < 1) {
+            $this->hasUntrustedOrderId = true;
             return 0;
         }
 

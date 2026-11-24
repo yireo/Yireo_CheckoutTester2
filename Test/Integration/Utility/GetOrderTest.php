@@ -84,6 +84,54 @@ class GetOrderTest extends TestCase
 
     /**
      * @magentoDataFixture Magento/Sales/_files/order_list.php
+     * @dataProvider getMalformedOrderIds
+     */
+    public function testGetTreatsMalformedOrderIdFromUrlAsUntrusted(mixed $orderId)
+    {
+        $this->setCreatedAtOfOrders();
+        $this->getRequest()->setParam('order_id', $orderId);
+
+        $target = $this->getTarget();
+        $this->assertSame('100000002', $target->get()->getIncrementId());
+        $this->assertSame(GetOrder::SOURCE_LATEST, $target->getSource());
+        $this->assertFalse($target->isTrustedSource());
+    }
+
+    public static function getMalformedOrderIds(): array
+    {
+        return [['abc'], ['0'], ['-1'], ['1abc'], [' 1'], [0], [['1']]];
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order_list.php
+     */
+    public function testGetTreatsMalformedOrderIdWithTokenAsUntrusted()
+    {
+        $this->setCreatedAtOfOrders();
+        $orderId = $this->getOrderId('100000001');
+        $this->setSignedOrderIdInRequest($orderId);
+        $this->getRequest()->setParam('order_id', $orderId . 'abc');
+
+        $target = $this->getTarget();
+        $this->assertSame('100000002', $target->get()->getIncrementId());
+        $this->assertFalse($target->isTrustedSource());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order_list.php
+     */
+    public function testGetTreatsEmptyOrderIdFromUrlAsTrusted()
+    {
+        $this->setCreatedAtOfOrders();
+        $this->getRequest()->setParam('order_id', '');
+
+        $target = $this->getTarget();
+        $this->assertSame('100000002', $target->get()->getIncrementId());
+        $this->assertTrue($target->isTrustedSource());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order_list.php
      */
     public function testGetIgnoresOrderFromUrlWithExpiredToken()
     {
