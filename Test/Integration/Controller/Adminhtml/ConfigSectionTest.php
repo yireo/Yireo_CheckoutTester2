@@ -57,6 +57,20 @@ class ConfigSectionTest extends AbstractBackendController
         $this->assertStringContainsString('rel="noopener noreferrer"', (string)$this->getResponse()->getBody());
     }
 
+    public function testFundingLinksAreOpenedWithoutOpener()
+    {
+        $this->dispatch('backend/admin/system_config/edit/section/checkouttester2/');
+        $body = (string)$this->getResponse()->getBody();
+        $this->assertStringContainsString(
+            '<a href="https://github.com/sponsors/yireo" target="_blank" rel="noopener noreferrer">',
+            $body
+        );
+        $this->assertStringContainsString(
+            '<a href="https://github.com/sponsors/jissereitsma" target="_blank" rel="noopener noreferrer">',
+            $body
+        );
+    }
+
     public function testGetFrontendLink()
     {
         $this->assertStringContainsString('checkouttester/index/success', $this->getLinkBlock()->getFrontendLink());
