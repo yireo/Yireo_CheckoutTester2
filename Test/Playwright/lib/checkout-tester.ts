@@ -204,6 +204,9 @@ export async function openSuccessPage(
 
 export async function expectSuccessPage(page: Page, response: Response, incrementId: string) {
     expect(response.status(), 'Success page status').toBe(200);
+    const cacheControl = (await response.allHeaders())['cache-control'] ?? '';
+    expect(cacheControl, 'Success page Cache-Control header').not.toContain('public');
+    expect(cacheControl, 'Success page Cache-Control header').toMatch(/no-store|no-cache|private/);
     await expect(page.locator('body')).toContainText(THANK_YOU);
     await expect(page.locator('body')).toContainText(incrementId);
 }
