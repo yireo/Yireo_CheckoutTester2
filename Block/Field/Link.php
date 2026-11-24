@@ -12,6 +12,7 @@ namespace Yireo\CheckoutTester2\Block\Field;
 use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Url;
 use Magento\Store\Api\Data\StoreInterface;
@@ -107,7 +108,36 @@ class Link extends Field
     {
         $storeId = $this->_request->getParam('store');
         if (is_string($storeId) && $storeId !== '') {
-            return $this->_storeManager->getStore($storeId);
+            try {
+                return $this->_storeManager->getStore($storeId);
+            } catch (NoSuchEntityException $exception) {
+                return $this->getDefaultStore();
+            }
+        }
+
+        $websiteId = $this->_request->getParam('website');
+        if (is_string($websiteId) && $websiteId !== '') {
+            try {
+                $website = $this->_storeManager->getWebsite($websiteId);
+                $group = $this->_storeManager->getGroup($website->getDefaultGroupId());
+                return $this->_storeManager->getStore($group->getDefaultStoreId());
+            } catch (LocalizedException $exception) {
+                return $this->getDefaultStore();
+            }
+        }
+
+        return $this->getDefaultStore();
+    }
+
+    /**
+     * @return StoreInterface
+     * @throws NoSuchEntityException
+     */
+    private function getDefaultStore(): StoreInterface
+    {
+        $store = $this->_storeManager->getDefaultStoreView();
+        if ($store instanceof StoreInterface) {
+            return $store;
         }
 
         return $this->_storeManager->getStore();
