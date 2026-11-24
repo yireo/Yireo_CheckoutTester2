@@ -10,6 +10,7 @@
 
 namespace Yireo\CheckoutTester2\Test\Unit\Config;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\State;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -109,20 +110,30 @@ class ConfigTest extends TestCase
         $this->assertSame('', $target->getIpAddress());
     }
 
-    public function testGetConfigValueReturnsDefaultValueForEmptyValue()
+    public function testGetOrderIdFromConfigWhenEmpty()
     {
-        $this->setScopeConfigValue('checkouttester2/settings/foobar', '');
+        $this->setScopeConfigValue('checkouttester2/settings/order_id', '');
         $target = $this->getTargetObject();
-        $this->assertSame('default', $target->getConfigValue('foobar', 'default'));
-        $this->assertNull($target->getConfigValue('foobar'));
+        $this->assertSame(0, $target->getOrderIdFromConfig());
     }
 
-    public function testGetConfigValueWithoutPrefix()
+    public function testGetOrderIdFromConfigForSpecificStore()
     {
-        $this->setScopeConfigValue('general/locale/code', 'nl_NL');
+        $scopeConfig = $this->createMock(ScopeConfigInterface::class);
+        $scopeConfig->method('getValue')->willReturnMap([
+            ['checkouttester2/settings/order_id', 'store', null, '42'],
+            ['checkouttester2/settings/order_id', 'store', 2, '43'],
+        ]);
+        $target = new Target($scopeConfig, $this->createMock(State::class));
+
+        $this->assertSame(42, $target->getOrderIdFromConfig());
+        $this->assertSame(43, $target->getOrderIdFromConfig(2));
+    }
+
+    public function testDispatchIsNotAllowedWhenEmpty()
+    {
         $target = $this->getTargetObject();
-        $this->assertSame('nl_NL', $target->getConfigValue('general/locale/code', null, false));
-        $this->assertNull($target->getConfigValue('general/locale/code'));
+        $this->assertSame(false, $target->allowDispatchCheckoutOnepageControllerSuccessAction());
     }
 
     /**
