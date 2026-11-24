@@ -56,7 +56,8 @@ The success page shows real order data, so access is restricted with the setting
 - A comma-separated list of IP addresses only allows those addresses;
 - `*` allows every IP address, but only in developer mode. In other modes, `*` is ignored. Saving `*` in the
   configuration is only possible when **Only in Developer Mode** is enabled. Invalid IP addresses can not be saved;
-- When empty, every IP address is allowed in developer mode only, and access is denied in other modes.
+- When empty, only loopback, private and reserved IP addresses (like `127.0.0.1`, `::1`, `10.0.0.0/8`, `172.16.0.0/12`
+  and `192.168.0.0/16`) are allowed, in developer mode only. Access is denied in other modes.
 
 The IP address is the address of the connection (`REMOTE_ADDR`). Headers like `Client-IP` are ignored. The
 `X-Forwarded-For` header is only used when the connection comes from an IP listed in the setting **Trusted Proxies**

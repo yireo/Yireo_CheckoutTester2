@@ -21,6 +21,23 @@ use Yireo\CheckoutTester2\Utility\OrderToken;
 
 class BrowseTest extends ControllerTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setServer(['REMOTE_ADDR' => '127.0.0.1']);
+    }
+
+    /**
+     * @magentoConfigFixture current_store checkouttester2/settings/enabled 1
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testIfPageFailsFromPublicIpWithoutConfiguredIp()
+    {
+        $this->setServer(['REMOTE_ADDR' => '8.8.8.8']);
+        $this->dispatch('/checkouttester/index/success');
+        $this->assert404NotFound();
+    }
+
     /**
      * @magentoConfigFixture current_store checkouttester2/settings/enabled 0
      */
