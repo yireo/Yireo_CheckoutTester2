@@ -104,7 +104,7 @@ class Access
             $ip = substr($ip, 7);
         }
 
-        if ($ip === '::1' || str_starts_with($ip, '127.')) {
+        if ($ip === '::1' || strpos($ip, '127.') === 0) {
             return true;
         }
 
