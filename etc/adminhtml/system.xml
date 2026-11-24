@@ -54,12 +54,12 @@
                     </depends>
                     <comment><![CDATA[CSV-list of IP-addresses of your own reverse proxies (like Varnish or a load balancer). Only for connections from these IPs, the X-Forwarded-For header is used to determine the visitor IP. Never add IPs that you do not control.]]></comment>
                 </field>
-                <field id="checkout_onepage_controller_success_action" type="select" translate="label" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="checkout_onepage_controller_success_action" type="select" translate="label comment" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Generate event</label>
                     <depends>
                         <field id="checkouttester2/settings/enabled">1</field>
                     </depends>
-                    <comment><![CDATA[Event "checkout_onepage_controller_success_action" is triggered with every page view. Warning: this may send conversions to analytics or trigger other order processing again.]]></comment>
+                    <comment><![CDATA[Event "checkout_onepage_controller_success_action" is triggered with every page view, but only for trusted order sources (the configured Sales Order ID, the latest order or a signed URL). Warning: this may send conversions to analytics or trigger other order processing again.]]></comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="usage" type="select" translate="label" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">

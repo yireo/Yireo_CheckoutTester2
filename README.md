@@ -70,6 +70,27 @@ The IP address is the address of the connection (`REMOTE_ADDR`). Headers like `C
 `X-Forwarded-For` header is only used when the connection comes from an IP listed in the setting **Trusted Proxies**
 (like Varnish or a load balancer); then the last address that is not a trusted proxy is used. If there is no such address, access is denied. Only orders of the current store view are shown. Blocked requests show a 404 page.
 
+### Events
+With the setting **Generate event**, the event `checkout_onepage_controller_success_action` is dispatched with every
+page view. This only happens for trusted order sources: the configured **Sales Order ID**, the latest order or an
+`order_id` with a valid token. When the request contains any other `order_id`, no event is dispatched.
+
+## Upgrading (breaking changes)
+This version hardens the security of the module. Check the following before upgrading:
+
+- The module is disabled by default. Enable it with the setting **Enabled**.
+- The URL parameter `order_id` is ignored unless it comes with a valid `expires` and `token` parameter. Use the link
+  **Usage** in the configuration to generate a signed URL.
+- The wildcard `*` in **Development IP** only works in developer mode, and can only be saved when **Only in Developer
+  Mode** is enabled. Invalid IP addresses can not be saved.
+- With an empty **Development IP**, only loopback, private and reserved client IPs have access (in developer mode).
+- The settings **Development IP** (`checkouttester2/settings/ip`) and **Trusted Proxies**
+  (`checkouttester2/settings/trusted_proxies`) are now read from the default scope only. Values on website or store
+  view level are ignored: migrate them to the default scope before upgrading.
+- When the shop runs behind a reverse proxy with a private IP (like Varnish or a load balancer) that is not listed in
+  **Trusted Proxies**, every visitor appears to have the IP of that proxy. With an empty **Development IP** in developer
+  mode, this would grant access to all visitors. Always add your own reverse proxies to **Trusted Proxies**.
+
 ### Tip
 If you like this extension, make sure to view our EmailTester2 extension. We do not want to build a shop without it.
 

@@ -1,4 +1,6 @@
 <?php
+/** @var \Magento\Framework\Escaper $escaper */
+$newTab = __('Opens in a new tab');
 ?>
 <div class="yireo-funding">
     <div class="github-logo">
@@ -34,12 +36,14 @@
             <li>
                 <a href="https://github.com/sponsors/jissereitsma"
                    target="_blank"
-                   rel="noopener noreferrer">https://github.com/sponsors/jissereitsma</a>
+                   rel="noopener noreferrer"
+                   title="<?= $escaper->escapeHtmlAttr($newTab) ?>">https://github.com/sponsors/jissereitsma</a>
             </li>
             <li>
                 <a href="https://github.com/sponsors/yireo"
                    target="_blank"
-                   rel="noopener noreferrer">https://github.com/sponsors/yireo</a>
+                   rel="noopener noreferrer"
+                   title="<?= $escaper->escapeHtmlAttr($newTab) ?>">https://github.com/sponsors/yireo</a>
             </li>
         </ul>
     </div>
