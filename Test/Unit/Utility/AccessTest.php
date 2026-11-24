@@ -156,6 +156,23 @@ class AccessTest extends TestCase
         $this->assertFalse($target->hasAccess());
     }
 
+    public function testTrustedProxyIsNotUsedAsClientIpAddress()
+    {
+        $this->setScopeConfigValue('checkouttester2/settings/ip', '10.0.0.1');
+        $this->setScopeConfigValue('checkouttester2/settings/trusted_proxies', '10.0.0.1, 10.0.0.2');
+
+        $target = $this->getTargetObject(['REMOTE_ADDR' => '10.0.0.1'], State::MODE_PRODUCTION);
+        $this->assertSame('', $target->getCurrentIpAddress());
+        $this->assertFalse($target->hasAccess());
+
+        $target = $this->getTargetObject(
+            ['REMOTE_ADDR' => '10.0.0.1', 'HTTP_X_FORWARDED_FOR' => '10.0.0.2'],
+            State::MODE_PRODUCTION
+        );
+        $this->assertSame('', $target->getCurrentIpAddress());
+        $this->assertFalse($target->hasAccess());
+    }
+
     public function testGetCurrentIpAddress()
     {
         $this->assertSame('1.2.3.4', $this->getTargetObject(['REMOTE_ADDR' => '1.2.3.4'])->getCurrentIpAddress());

@@ -65,7 +65,10 @@ class Access
             return '';
         }
 
-        $trustedProxies = array_map([$this, 'normalizeIpAddress'], $this->splitList($this->config->getTrustedProxies()));
+        $trustedProxies = array_map(
+            [$this, 'normalizeIpAddress'],
+            $this->splitList($this->config->getTrustedProxies())
+        );
         if (!in_array($remoteIp, $trustedProxies, true)) {
             return $remoteIp;
         }
@@ -82,7 +85,7 @@ class Access
             }
         }
 
-        return $remoteIp;
+        return '';
     }
 
     /**
