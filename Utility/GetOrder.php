@@ -30,6 +30,7 @@ class GetOrder
     private StoreManagerInterface $storeManager;
     private OrderToken $orderToken;
     private string $source = self::SOURCE_NONE;
+    private bool $hasUntrustedOrderId = false;
 
     public function __construct(
         RequestInterface $request,
@@ -59,6 +60,7 @@ class GetOrder
     public function get(): OrderInterface
     {
         $this->source = self::SOURCE_NONE;
+        $this->hasUntrustedOrderId = false;
 
         $order = $this->getOrderById($this->getOrderIdFromUrl());
         if ($order->getEntityId()) {
@@ -95,6 +97,17 @@ class GetOrder
     }
 
     /**
+     * Check whether the order returned by the last call to get() comes from a trusted source and the request did not
+     * contain an order ID without a valid token
+     *
+     * @return bool
+     */
+    public function isTrustedSource(): bool
+    {
+        return $this->source !== self::SOURCE_NONE && $this->hasUntrustedOrderId === false;
+    }
+
+    /**
      * Return the order ID from the URL, but only when it is signed with a valid token
      *
      * @return int
@@ -108,11 +121,9 @@ class GetOrder
 
         $expires = (int)$this->request->getParam('expires');
         $token = $this->request->getParam('token');
-        if (!is_string($token)) {
-            return 0;
-        }
-
-        if (!$this->orderToken->isValid($orderId, $this->getCurrentStoreId(), $expires, $token)) {
+        $storeId = $this->getCurrentStoreId();
+        if (!is_string($token) || !$this->orderToken->isValid($orderId, $storeId, $expires, $token)) {
+            $this->hasUntrustedOrderId = true;
             return 0;
         }
 

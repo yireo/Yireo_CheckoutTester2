@@ -113,6 +113,7 @@ class SuccessTest extends TestCase
     {
         $order = $this->getOrderMock(42);
         $this->config->method('allowDispatchCheckoutOnepageControllerSuccessAction')->willReturn(true);
+        $this->getOrder->method('isTrustedSource')->willReturn(true);
         $this->eventManager->expects($this->once())
             ->method('dispatch')
             ->with('checkout_onepage_controller_success_action', ['order_ids' => [42], 'order' => $order]);
@@ -126,6 +127,43 @@ class SuccessTest extends TestCase
         $this->eventManager->expects($this->never())->method('dispatch');
 
         $this->getTargetObject()->dispatchEvents($this->getOrderMock(42));
+    }
+
+    public function testDispatchEventsNotWithUntrustedOrderSource()
+    {
+        $this->config->method('allowDispatchCheckoutOnepageControllerSuccessAction')->willReturn(true);
+        $this->getOrder->method('isTrustedSource')->willReturn(false);
+        $this->eventManager->expects($this->never())->method('dispatch');
+
+        $this->getTargetObject()->dispatchEvents($this->getOrderMock(42));
+    }
+
+    public function testExecuteDoesNotDispatchEventsWithUntrustedOrderSource()
+    {
+        $page = $this->createMock(Page::class);
+        $this->config->method('enabled')->willReturn(true);
+        $this->config->method('allowDispatchCheckoutOnepageControllerSuccessAction')->willReturn(true);
+        $this->access->method('hasAccess')->willReturn(true);
+        $this->getOrder->method('get')->willReturn($this->getOrderMock(42));
+        $this->getOrder->method('isTrustedSource')->willReturn(false);
+        $this->pageFactory->method('create')->willReturn($page);
+        $this->eventManager->expects($this->never())->method('dispatch');
+
+        $this->getTargetObject()->execute();
+    }
+
+    public function testExecuteDispatchesEventsWithTrustedOrderSource()
+    {
+        $page = $this->createMock(Page::class);
+        $this->config->method('enabled')->willReturn(true);
+        $this->config->method('allowDispatchCheckoutOnepageControllerSuccessAction')->willReturn(true);
+        $this->access->method('hasAccess')->willReturn(true);
+        $this->getOrder->method('get')->willReturn($this->getOrderMock(42));
+        $this->getOrder->method('isTrustedSource')->willReturn(true);
+        $this->pageFactory->method('create')->willReturn($page);
+        $this->eventManager->expects($this->once())->method('dispatch');
+
+        $this->getTargetObject()->execute();
     }
 
     private function getOrderMock(?int $entityId, ?string $incrementId = null): OrderInterface&MockObject

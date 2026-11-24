@@ -147,6 +147,10 @@ class Success implements HttpGetActionInterface
             return;
         }
 
+        if (!$this->getOrder->isTrustedSource()) {
+            return;
+        }
+
         $eventData = [
             'order_ids' => [$order->getEntityId()],
             'order' => $order
