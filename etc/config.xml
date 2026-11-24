@@ -13,7 +13,7 @@
     <default>
         <checkouttester2>
             <settings>
-                <enabled>1</enabled>
+                <enabled>0</enabled>
                 <only_in_dev_mode>1</only_in_dev_mode>
                 <order_id>0</order_id>
                 <ip/>

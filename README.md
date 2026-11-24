@@ -28,6 +28,12 @@ bin/magento setup:upgrade
 
 * Flush the Magento cache
 * Configure settings under **Stores > Configuration > Yireo > Yireo CheckoutTester**
+* Enable the module with the setting **Enabled** (the module is disabled by default), or via the CLI:
+
+```bash
+bin/magento config:set checkouttester2/settings/enabled 1
+```
+
 * Done
 
 ## Usage
