@@ -130,6 +130,8 @@ class Link extends Field
     }
 
     /**
+     * Return the default store view
+     *
      * @return StoreInterface
      * @throws NoSuchEntityException
      */

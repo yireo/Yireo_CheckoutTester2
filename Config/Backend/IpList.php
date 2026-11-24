@@ -42,6 +42,8 @@ class IpList extends Value
     }
 
     /**
+     * Check whether the setting "Only in Developer Mode" is enabled
+     *
      * @return bool
      */
     private function isOnlyInDevMode(): bool
