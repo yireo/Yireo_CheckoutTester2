@@ -95,6 +95,7 @@ class ConfigSectionTest extends AbstractBackendController
     /**
      * @magentoDataFixture Magento/Store/_files/second_store.php
      * @magentoConfigFixture default/web/url/use_store 1
+     * @magentoConfigFixture default_store web/url/use_store 1
      * @magentoConfigFixture fixture_second_store_store web/url/use_store 1
      */
     public function testGetFrontendLinkUsesDefaultStoreWithoutScope()
@@ -105,6 +106,7 @@ class ConfigSectionTest extends AbstractBackendController
     /**
      * @magentoDataFixture Magento/Store/_files/second_store.php
      * @magentoConfigFixture default/web/url/use_store 1
+     * @magentoConfigFixture default_store web/url/use_store 1
      * @magentoConfigFixture fixture_second_store_store web/url/use_store 1
      */
     public function testGetFrontendLinkFallsBackToDefaultStoreWithUnknownStore()
@@ -116,6 +118,7 @@ class ConfigSectionTest extends AbstractBackendController
     /**
      * @magentoDataFixture Magento/Store/_files/second_store.php
      * @magentoConfigFixture default/web/url/use_store 1
+     * @magentoConfigFixture default_store web/url/use_store 1
      * @magentoConfigFixture fixture_second_store_store web/url/use_store 1
      */
     public function testGetFrontendLinkFallsBackToDefaultStoreWithUnknownWebsite()
@@ -209,6 +212,7 @@ class ConfigSectionTest extends AbstractBackendController
 
     private function getLinkBlock(): Link
     {
+        $this->_objectManager->get(StoreManagerInterface::class)->reinitStores();
         $block = $this->_objectManager->get(LayoutInterface::class)->createBlock(Link::class);
         $this->assertInstanceOf(Link::class, $block);
 
