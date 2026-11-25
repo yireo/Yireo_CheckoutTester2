@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 25 November 2026
+### Changed
+- BREAKING: The module is now disabled by default, so installing it no longer exposes order data; enable it with the setting Enabled (checkouttester2/settings/enabled)
+- BREAKING: The order_id URL parameter is ignored unless it carries a valid, non-expired signed token; use the link in the module configuration to generate such a URL
+- BREAKING: The wildcard "*" in Development IP only grants access in developer mode, and invalid IP entries can no longer be saved
+- BREAKING: With an empty Development IP setting, only loopback and private network addresses get access (in developer mode), and a missing client IP never grants access
+- The settings Development IP and Trusted Proxies are only configurable and read in the default scope, so a website or store view can no longer widen access
+
+### Fixed
+- Fix the checkout success event being dispatched for untrusted or malformed order IDs, which could trigger tracking and other observers for arbitrary orders
+- Fix a trusted proxy being treated as the client IP when X-Forwarded-For has no other address
+- Fix the success page offering account creation for the shown order and possibly being stored in the full page cache
+- Fix the admin link pointing to the wrong store view when store codes are not in URLs, and fall back to the default store when the selected store or website does not exist
+- Fix sponsor links in the admin exposing the admin window and URL to the external page
+
 ## [1.0.5] - 23 November 2026
 ### Fixed
 - Prevent IP allowlist bypass and guest order takeover
