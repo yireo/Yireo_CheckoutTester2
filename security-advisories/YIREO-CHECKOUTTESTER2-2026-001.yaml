@@ -1,0 +1,38 @@
+schema_version: "1.6.0"
+id: YIREO-CHECKOUTTESTER2-2026-001
+published: "2026-11-25T00:00:00Z"
+modified: "2026-11-25T00:00:00Z"
+aliases: []
+summary: CheckoutTester page discloses order data of arbitrary orders via unsigned order_id parameter
+details: >
+  The CheckoutTester success page accepted an unsigned order_id URL parameter, so that any visitor
+  passing the IP allowlist could enumerate orders and view their data, including customer names,
+  addresses and ordered items. The IP allowlist could be passed more easily than intended: the module
+  was enabled on installation, the wildcard "*" granted access in production mode, an empty allowlist
+  did not restrict access to private networks, a trusted proxy could be treated as the client IP and
+  the IP settings could be widened on website or store view level. The page, showing order data,
+  could also be stored in the full page cache and offered account creation for the shown order, and
+  the checkout success event was dispatched for arbitrary orders. Version 2.0.0 disables the module by
+  default, requires an expiring HMAC-signed token for the order_id parameter, allows the wildcard only
+  in developer mode, restricts an empty allowlist to private networks, reads the IP settings only from
+  the default scope, no longer treats a trusted proxy as client IP, makes the page non-cacheable,
+  removes the registration block and only dispatches the success event for trusted order sources.
+severity:
+  - type: CVSS_V3
+    score: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+affected:
+  - package:
+      ecosystem: Packagist
+      name: yireo/magento2-checkouttester2
+    ranges:
+      - type: ECOSYSTEM
+        events:
+          - introduced: "0"
+          - fixed: "2.0.0"
+references:
+  - type: PACKAGE
+    url: https://github.com/yireo/Yireo_CheckoutTester2
+database_specific:
+  cwe_ids:
+    - CWE-639
+    - CWE-200
