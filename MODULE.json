@@ -84,8 +84,8 @@
         }
     ],
     "tests": {
-        "unit": 33,
-        "integration": 23,
+        "unit": 53,
+        "integration": 44,
         "functional": 0
     }
 }
