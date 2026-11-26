@@ -1,7 +1,7 @@
 schema_version: "1.6.0"
 id: YIREO-CHECKOUTTESTER2-2026-001
 published: "2026-11-25T00:00:00Z"
-modified: "2026-11-25T00:00:00Z"
+modified: "2026-11-26T00:00:00Z"
 aliases: []
 summary: CheckoutTester page discloses order data of arbitrary orders via unsigned order_id parameter
 details: >
@@ -12,11 +12,11 @@ details: >
   did not restrict access to private networks, a trusted proxy could be treated as the client IP and
   the IP settings could be widened on website or store view level. The page, showing order data,
   could also be stored in the full page cache and offered account creation for the shown order, and
-  the checkout success event was dispatched for arbitrary orders. Version 2.0.0 disables the module by
-  default, requires an expiring HMAC-signed token for the order_id parameter, allows the wildcard only
-  in developer mode, restricts an empty allowlist to private networks, reads the IP settings only from
-  the default scope, no longer treats a trusted proxy as client IP, makes the page non-cacheable,
-  removes the registration block and only dispatches the success event for trusted order sources.
+  the checkout success event was dispatched for arbitrary orders. Versions 1.0.6 and 2.0.0 disable the module by
+  default, require an expiring HMAC-signed token for the order_id parameter, allow the wildcard only
+  in developer mode, restrict an empty allowlist to private networks, read the IP settings only from
+  the default scope, no longer treat a trusted proxy as client IP, make the page non-cacheable,
+  remove the registration block and only dispatch the success event for trusted order sources.
 severity:
   - type: CVSS_V3
     score: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
@@ -28,7 +28,7 @@ affected:
       - type: ECOSYSTEM
         events:
           - introduced: "0"
-          - fixed: "2.0.0"
+          - fixed: "1.0.6"
 references:
   - type: PACKAGE
     url: https://github.com/yireo/Yireo_CheckoutTester2
