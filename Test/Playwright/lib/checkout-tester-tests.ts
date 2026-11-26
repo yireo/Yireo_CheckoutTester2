@@ -7,6 +7,7 @@ import {
     openSuccessPage,
     expectSuccessPage,
     expectBlocked,
+    isDeveloperMode,
     HYVA_THEME,
     PlacedOrder,
 } from './checkout-tester';
@@ -101,7 +102,7 @@ export function defineCheckoutTesterTests(theme: string) {
         await configure(page, theme, {'checkouttester2/settings/ip': '*'});
         try {
             const response = await openSuccessPage(page);
-            if (process.env.CHECKOUTTESTER_DEVELOPER_MODE === '1') {
+            if (isDeveloperMode()) {
                 await expectSuccessPage(page, response, latestOrder.incrementId);
             } else {
                 await expectBlocked(page, response);

@@ -1,5 +1,7 @@
 import {test, expect, Browser, Page, Response} from '@playwright/test';
 import {createConnection, isIP} from 'node:net';
+import {existsSync, readFileSync} from 'node:fs';
+import {join} from 'node:path';
 
 export {test, expect};
 
@@ -29,6 +31,20 @@ export type PlacedOrder = {
 
 const token = () => process.env.TEST_TOKEN;
 
+export function isDeveloperMode(): boolean {
+    const configuredMode = process.env.CHECKOUTTESTER_DEVELOPER_MODE;
+    if (configuredMode !== undefined && configuredMode !== '') {
+        return configuredMode === '1';
+    }
+
+    const envFile = process.env.MAGENTO_ROOT ? join(process.env.MAGENTO_ROOT, 'app', 'etc', 'env.php') : '';
+    if (!envFile || !existsSync(envFile)) {
+        return false;
+    }
+
+    return /['"]MAGE_MODE['"]\s*=>\s*['"]developer['"]/.test(readFileSync(envFile, 'utf8'));
+}
+
 async function clientIp(): Promise<string> {
     const configuredIp = process.env.CHECKOUTTESTER_CLIENT_IP;
     if (configuredIp) {
@@ -36,6 +52,11 @@ async function clientIp(): Promise<string> {
         return configuredIp;
     }
 
+    const localIp = await socketLocalIp();
+    return [...new Set([localIp, '127.0.0.1'])].join(', ');
+}
+
+async function socketLocalIp(): Promise<string> {
     const url = new URL(process.env.TEST_URL!);
     return new Promise((resolve, reject) => {
         const socket = createConnection({
