@@ -1,0 +1,67 @@
+schema_version: 1.6.0
+id: YIREO-CHECKOUT-TESTER2-2026-001
+aliases:
+  - GHSA-j3v6-wf33-x9rx
+published: '2026-11-23T18:52:52Z'
+modified: '2026-11-23T18:52:52Z'
+summary: 'IP allowlist bypass via spoofed Client-IP / X-Forwarded-For allows viewing and taking over orders'
+details: |-
+  ### Impact
+  The CheckoutTester success page (`/checkouttester/index/success`) is restricted with the IP allowlist setting `checkouttester2/settings/ip`. Up to and including 1.0.4, the visitor IP was taken from `Request::getClientIp()`, which returns the client-controlled `Client-IP` and `X-Forwarded-For` headers before `REMOTE_ADDR`. An unauthenticated visitor who knows or guesses one allowlisted IP could send `Client-IP: <allowlisted IP>` and render the success page for any order ID (`order_id` parameter), or, without that parameter, the latest order in the database.
+
+  The action also stored the requested order as the last order in the visitor's checkout session. Combined with the core Magento flow `checkout/account/delegateCreate` followed by `customer/account/createPost`, an attacker could create an account and have a **guest order of another customer assigned to that account** (`Magento\Sales\Observer\AssignOrderToCustomerObserver`), exposing addresses, phone number, items, invoices and shipments in "My Account". This requires customer registration to be enabled and the order to be a guest order.
+
+  Further hardening issues fixed in the same release:
+  - With an empty allowlist (the default), the page was open to every visitor whenever the module answered requests (developer mode, or `only_in_dev_mode` set to 0).
+  - Orders of other store views were shown.
+  - Blocked requests threw uncaught exceptions: HTTP 500, an error report in `var/report` per request, and the (spoofable) IP echoed in the message.
+  - The ACL resource `Yireo_CheckoutTester2::config` was referenced but not defined.
+
+  Affected configurations: the module must answer requests (the shop runs in developer mode with the default `only_in_dev_mode=1`, or `only_in_dev_mode` is set to 0). Staging environments with copies of production data are typically affected.
+
+  ### Patches
+  Fixed in **1.0.5**:
+  - The visitor IP is now `REMOTE_ADDR`. `Client-IP` is ignored and `X-Forwarded-For` is only used for connections from the new setting **Trusted Proxies** (`checkouttester2/settings/trusted_proxies`).
+  - The order is only placed in the checkout session while the page is rendered, then the previous values are restored.
+  - Only orders of the current store view are shown.
+  - Blocked requests show a regular 404 page.
+  - `etc/acl.xml` was added.
+
+  **Behaviour change:** an empty **Development IP** setting now only allows access in developer mode. Use `*` to explicitly allow every IP address in other modes.
+
+  ### Workarounds
+  - Disable the module (`checkouttester2/settings/enabled` = 0) or remove it from environments reachable from the internet.
+  - Make sure the web server or reverse proxy strips or overwrites incoming `Client-IP` and `X-Forwarded-For` headers.
+
+  ### References
+  - Fix: https://github.com/yireo/Yireo_CheckoutTester2/commit/25e5497
+  - Release: https://github.com/yireo/Yireo_CheckoutTester2/releases/tag/1.0.5
+severity:
+  -
+    type: CVSS_V3
+    score: 'CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:N'
+affected:
+  -
+    package:
+      ecosystem: Packagist
+      name: yireo/magento2-checkouttester2
+    ranges:
+      -
+        type: ECOSYSTEM
+        events:
+          -
+            introduced: '0'
+          -
+            fixed: 1.0.5
+references:
+  -
+    type: PACKAGE
+    url: 'https://github.com/yireo/Yireo_CheckoutTester2'
+  -
+    type: ADVISORY
+    url: 'https://github.com/yireo/Yireo_CheckoutTester2/security/advisories/GHSA-j3v6-wf33-x9rx'
+database_specific:
+  cwe_ids:
+    - CWE-290
+    - CWE-639
+    - CWE-1188
